@@ -62,3 +62,12 @@ func (t *TimetableService) GetTimetableOfGroup(groupId int) ([]models.Timetable,
 	}
 	return timetables, nil
 }
+
+func (t *TimetableService) GetStudentTeacherLessonBinding(teacherID, lessonID int) (models.LessonTeacherStudent, error) {
+	res, err := t.repo.GetStudentTeacherLessonBinding(teacherID, lessonID)
+	if err != nil {
+		t.logger.Info("get student teacher lesson binding failed", zap.Error(err))
+		return models.LessonTeacherStudent{}, err
+	}
+	return res, nil
+}

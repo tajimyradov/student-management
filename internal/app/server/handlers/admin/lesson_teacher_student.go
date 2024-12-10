@@ -57,4 +57,14 @@ func (h *Admin) getLessonTeacherStudentBinding(c *gin.Context) {
 		return
 	}
 
+	res, err := h.services.TimetableService.GetStudentTeacherLessonBinding(teacherId, lessonId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":                         "ok",
+		"message":                        "",
+		"lesson_teacher_student_binding": res,
+	})
 }
