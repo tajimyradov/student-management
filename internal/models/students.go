@@ -1,15 +1,16 @@
 package models
 
 type Student struct {
-	ID        int    `json:"id" db:"id"`
-	FirstName string `json:"first_name" db:"first_name"`
-	LastName  string `json:"last_name" db:"last_name"`
-	Code      string `json:"code" db:"code"`
-	Gender    bool   `json:"gender" db:"gender"`
-	BirthDate string `json:"birth_date" db:"birth_date"`
-	GroupID   int    `json:"group_id" db:"group_id"`
-	Username  string `json:"username" db:"username"`
-	Password  string `json:"password" db:"password"`
+	ID        int    `json:"id,omitempty" db:"id"`
+	FirstName string `json:"first_name,omitempty" db:"first_name"`
+	LastName  string `json:"last_name,omitempty" db:"last_name"`
+	Code      string `json:"code,omitempty" db:"code"`
+	Gender    bool   `json:"gender,omitempty" db:"gender"`
+	BirthDate string `json:"birth_date,omitempty" db:"birth_date"`
+	GroupID   int    `json:"group_id,omitempty" db:"group_id"`
+	GroupName string `json:"group_name,omitempty" db:"group_name"`
+	Username  string `json:"username,omitempty" db:"username"`
+	Password  string `json:"password,omitempty" db:"password"`
 }
 
 type StudentSearch struct {

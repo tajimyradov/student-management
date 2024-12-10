@@ -8,6 +8,7 @@ import (
 type AppConfig struct {
 	HTTP      HTTP     `mapstructure:"http"`
 	StudentDB Postgres `mapstructure:"student_postgres"`
+	Secrets   Secrets  `mapstructure:"secrets"`
 }
 
 type Postgres struct {
@@ -25,6 +26,11 @@ type HTTP struct {
 	ReadTimeout        time.Duration `mapstructure:"readTimeout"`
 	WriteTimeout       time.Duration `mapstructure:"writeTimeout"`
 	MaxHeaderMegabytes int           `mapstructure:"maxHeaderBytes"`
+}
+
+type Secrets struct {
+	AccessSecret string `mapstructure:"access_secret"`
+	PasswordSalt string `mapstructure:"password_salt"`
 }
 
 func NewAppConfig(configFile string) (*AppConfig, error) {

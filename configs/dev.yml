@@ -10,3 +10,7 @@ student_postgres:
   username: postgres
   dbname: postgres
   password: student
+
+secrets:
+  access_secret: is9G63gdsHa73V62WfJ84
+  password_salt: sj37dGtaH37dgF5D4a2bl

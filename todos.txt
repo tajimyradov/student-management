@@ -1,0 +1,4 @@
++ add hashing logic to students and teachers passwords
++ add hashing logic to sign in
++ check for permissions inside token
++ get Names of all selectors in admin endpoint

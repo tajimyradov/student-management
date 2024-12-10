@@ -2,14 +2,16 @@ package handlers
 
 import (
 	"fmt"
-	"net/http"
-	v1 "student-management/internal/app/server/handlers/v1"
-	"student-management/internal/config"
-	"student-management/internal/services"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"net/http"
+	a "student-management/internal/app/server/handlers/admin"
+	v1 "student-management/internal/app/server/handlers/v1"
+	"student-management/internal/config"
+	"student-management/internal/middlewares"
+	"student-management/internal/services"
+	"time"
 )
 
 type Handler struct {
@@ -35,19 +37,32 @@ func (h *Handler) Init() *gin.Engine {
 	router := gin.Default()
 	router.Use(
 		RequestCancelRecover(),
-		cors.Default(),
+		cors.New(
+			cors.Config{
+				AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+				AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+				AllowCredentials: false,
+				AllowAllOrigins:  true,
+				MaxAge:           12 * time.Hour,
+			},
+		),
 	)
 
 	//check endpoint
 	router.GET("/ping", func(c *gin.Context) {
-
 		c.String(http.StatusOK, "pong")
 	})
 
-	admin := router.Group("/admin")
+	v1Group := router.Group("/api/v1", middlewares.AuthorizationMiddleware)
 	{
-		v1Handlers := v1.NewHandler(h.services, h.logger, h.config)
-		v1Handlers.Init(admin)
+		v1Handlers := v1.NewHandler(h.services.ClientService, h.logger, h.config)
+		v1Handlers.Init(v1Group)
+	}
+
+	adminGroup := router.Group("/admin")
+	{
+		adminHandlers := a.NewHandler(h.services.AdminService, h.logger, h.config)
+		adminHandlers.Init(adminGroup)
 	}
 
 	return router

@@ -11,7 +11,9 @@ import (
 	"runtime"
 	"student-management/internal/app"
 	"student-management/internal/config"
+	"student-management/internal/models"
 	"student-management/internal/repositories"
+	"student-management/pkg/auth"
 	"student-management/pkg/logger"
 	"student-management/pkg/postgres"
 	"time"
@@ -64,8 +66,11 @@ func main() {
 		return
 	}
 
-	repos := repositories.NewRepository(studentDB, appConfig)
-	application := app.New(appConfig, ll, repos)
+	tokenManager := auth.NewAuthenticationManager(models.AccessSecret)
+
+	repos := repositories.NewRepositories(studentDB, appConfig)
+
+	application := app.New(appConfig, ll, repos, tokenManager)
 	application.Start(ctx)
 	application.Shutdown()
 }

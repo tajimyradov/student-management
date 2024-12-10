@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"student-management/internal/app/server/handlers"
 	"student-management/internal/config"
-	"student-management/internal/repositories"
+	repository "student-management/internal/repositories"
 	"student-management/internal/services"
+	"student-management/pkg/auth"
 
 	errch "github.com/proxeter/errors-channel"
 	"go.uber.org/zap"
@@ -18,7 +19,7 @@ type Server struct {
 	logger *zap.Logger
 	config *config.AppConfig
 
-	repos   *repositories.Repository
+	repos   *repository.Repositories
 	handler *handlers.Handler
 }
 
@@ -26,18 +27,20 @@ func NewServer(
 	ctx context.Context,
 	logger *zap.Logger,
 	config *config.AppConfig,
-	repos *repositories.Repository,
+	repos *repository.Repositories,
+	tokenManager *auth.AuthenticationManager,
 
 ) <-chan error {
 
 	return errch.Register(func() error {
-		deps := &services.ServiceDeps{
-			Repos:  repos,
-			Logger: logger,
-			Config: config,
+		srcDeps := &services.ServiceDeps{
+			Repos:        repos,
+			Logger:       logger,
+			Config:       config,
+			TokenManager: tokenManager,
 		}
 
-		src := services.NewService(deps)
+		src := services.NewServices(srcDeps)
 
 		handler := handlers.NewHandler(logger, config, src)
 
