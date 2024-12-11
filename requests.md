@@ -41,7 +41,8 @@ curl -X GET http://localhost:PORT/admin/faculty/{fid} \
 
 ### get faculties
 ```bash
-curl -X GET "http://localhost:PORT/admin/faculties?id=0&name=&code=&limit=10&page=1"
+curl -X GET "http://localhost:PORT/admin/faculty?id=0&name=&code=&limit=10&page=1"
+-H "Authorization: {token}" 
 ```
 
 ## Department
@@ -84,7 +85,7 @@ curl -X GET http://localhost:PORT/admin/department/{did} \
 
 ### get departments
 ```bash
-curl -X GET "http://localhost:PORT/admin/departments?id=0&name=&code=&faculty_id=0&limit=10&page=1" \
+curl -X GET "http://localhost:PORT/admin/department?id=0&name=&code=&faculty_id=0&limit=10&page=1" \
 -H "Authorization: {token}" 
 ```
 
@@ -128,7 +129,7 @@ curl -X GET http://localhost:PORT/admin/profession/{pid} \
 
 ### get professions
 ```bash
-curl -X GET "http://localhost:PORT/admin/professions?id=0&name=&code=&department_id=0&limit=10&page=1" \
+curl -X GET "http://localhost:PORT/admin/profession?id=0&name=&code=&department_id=0&limit=10&page=1" \
 -H "Authorization: {token}" 
 ```
 
@@ -174,7 +175,7 @@ curl -X GET http://localhost:PORT/admin/group/{gid} \
 
 ### get groups
 ```bash
-curl -X GET "http://localhost:PORT/admin/groups?id=0&name=&code=&year=0&profession_id=0&limit=10&page=1" \
+curl -X GET "http://localhost:PORT/admin/group?id=0&name=&code=&year=0&profession_id=0&limit=10&page=1" \
 -H "Authorization: {token}" 
 ```
 
@@ -216,7 +217,7 @@ curl -X GET http://localhost:PORT/admin/lesson/{lid} \
 
 ### get lessons
 ```bash
-curl -X GET "http://localhost:PORT/admin/lessons?id=0&name=&code=&limit=10&page=1" \
+curl -X GET "http://localhost:PORT/admin/lesson?id=0&name=&code=&limit=10&page=1" \
 -H "Authorization: {token}" 
 ```
 
@@ -258,7 +259,7 @@ curl -X GET http://localhost:PORT/admin/time/{tid} \
 
 ### get times
 ```bash
-curl -X GET "http://localhost:PORT/admin/times?id=0&start_time=&end_time=&limit=10&page=1" \
+curl -X GET "http://localhost:PORT/admin/time?id=0&start_time=&end_time=&limit=10&page=1" \
 -H "Authorization: {token}" 
 ```
 
@@ -379,7 +380,7 @@ curl -X GET http://localhost:PORT/admin/student/{sid} \
 
 ### get students
 ```bash
-curl -X GET "http://localhost:PORT/admin/students?id=0&first_name=John&last_name=Doe&username=johndoe&code=S12345&limit=10&page=1" \
+curl -X GET "http://localhost:PORT/admin/student?id=0&first_name=John&last_name=Doe&username=johndoe&code=S12345&limit=10&page=1" \
 -H "Authorization: {token}" 
 ```
 
@@ -440,7 +441,7 @@ curl -X GET http://localhost:PORT/admin/teacher/{tid} \
 
 ### get teachers
 ```bash
-curl -X GET "http://localhost:PORT/admin/teachers?id=0&first_name=Jane&last_name=Smith&username=janesmith&code=T12345&department_id=1&limit=10&page=1" \
+curl -X GET "http://localhost:PORT/admin/teacher?id=0&first_name=Jane&last_name=Smith&username=janesmith&code=T12345&department_id=1&limit=10&page=1" \
 -H "Authorization: {token}" 
 ```
 
