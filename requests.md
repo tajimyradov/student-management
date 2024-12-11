@@ -1,3 +1,7 @@
+# Token
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDI1MzYwNTYsInVzZXJfaWQiOjMsInJvbGVfaWQiOjN9.QPcyFt9lRMW5KttOUBvJUPl8kMbCS4zwJn0vquT1UMI
+```
 # **Admin**
 ## Faculty
 

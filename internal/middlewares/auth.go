@@ -10,6 +10,9 @@ import (
 )
 
 func AuthorizationMiddleware(c *gin.Context) {
+	if strings.Split(c.Request.RequestURI, "?")[0] == "/api/v1/sign-in" {
+		return
+	}
 	tokenStr, err := getFromHeader(c, "Authorization")
 	if err != nil {
 		errorResponse(c, http.StatusUnauthorized, map[string]interface{}{
@@ -41,13 +44,13 @@ func handlePermissions(c *gin.Context, claims *models.UserClaims) {
 	if requestURI[:6] == "/admin" && claims.RoleID == 3 {
 		return
 	}
-	if requestURI == "/api/v1/timetable" && (claims.RoleID == 1 || claims.RoleID == 2) {
+	if requestURI == "/api/v1/timetable" && (claims.RoleID == 1 || claims.RoleID == 2 || claims.RoleID == 3) {
 		return
 	}
-	if requestURI == "/api/v1/students" && (claims.RoleID == 2) {
+	if requestURI == "/api/v1/students" && (claims.RoleID == 2 || claims.RoleID == 3) {
 		return
 	}
-	if requestURI == "/api/v1/check-in" && (claims.RoleID == 2) {
+	if requestURI == "/api/v1/check-in" && (claims.RoleID == 2 || claims.RoleID == 3) {
 		return
 	}
 

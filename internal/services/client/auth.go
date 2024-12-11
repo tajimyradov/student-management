@@ -38,12 +38,12 @@ func (a *AuthService) SignIn(username string, password string) (string, int, err
 	password = a.generatePasswordHash(password)
 	var userID, roleID int
 	var token string
-	var isStudent = false
+	//var isStudent = false
 	var err error
 	userID, err = a.repo.LoginAsStudent(username, password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			isStudent = true
+			//isStudent = true
 			userID, roleID, err = a.repo.LoginAsTeacher(username, password)
 			if err != nil {
 				if errors.Is(err, sql.ErrNoRows) {
@@ -58,11 +58,9 @@ func (a *AuthService) SignIn(username string, password string) (string, int, err
 		}
 	}
 
-	if !isStudent {
-		roleID++
-	}
+	roleID++
 
-	token, err = a.tokenManager.NewJWT(userID, roleID, time.Hour*24)
+	token, err = a.tokenManager.NewJWT(userID, roleID, time.Hour*2400)
 	if err != nil {
 		return "", 0, errors.Wrap(err, "NewJWT failed")
 	}

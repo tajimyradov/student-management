@@ -59,7 +59,7 @@ func (h *Handler) Init() *gin.Engine {
 		v1Handlers.Init(v1Group)
 	}
 
-	adminGroup := router.Group("/admin")
+	adminGroup := router.Group("/admin", middlewares.AuthorizationMiddleware)
 	{
 		adminHandlers := a.NewHandler(h.services.AdminService, h.logger, h.config)
 		adminHandlers.Init(adminGroup)
