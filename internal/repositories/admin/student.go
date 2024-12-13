@@ -131,9 +131,9 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 	var query string
 
 	if argId > 1 || input.FirstName != "" || input.LastName != "" || input.Username != "" {
-		query = "select s.id,s.first_name, s.last_name, s.code, s.gender, s.username, s.password, s.group_id,s.birth_date,s.image,g.name as group_name from students as s join groups as g on g.id=s.group_id where " + queryArgs
+		query = "select s.id,s.first_name, s.last_name, s.code, s.gender, coalesce(s.username,'') as username, coalesce(s.password,'') as password, s.group_id,s.birth_date,coalesce(s.image,'') as image,g.name as group_name from students as s join groups as g on g.id=s.group_id where " + queryArgs
 	} else {
-		query = "select s.id,s.first_name, s.last_name, s.code, s.gender, s.username, s.password, s.group_id,s.birth_date,s.image,g.name as group_name from students as s join groups as g on g.id=s.group_id"
+		query = "select s.id,s.first_name, s.last_name, s.code, s.gender, coalesce(s.username,'') as username, coalesce(s.password,'') as password, s.group_id,s.birth_date,coalesce(s.image,'') as image,g.name as group_name from students as s join groups as g on g.id=s.group_id"
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)

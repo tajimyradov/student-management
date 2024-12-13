@@ -7,6 +7,7 @@ type Student struct {
 	Code      string `json:"code,omitempty" db:"code"`
 	Gender    bool   `json:"gender,omitempty" db:"gender"`
 	BirthDate string `json:"birth_date,omitempty" db:"birth_date"`
+	Image     string `json:"image,omitempty" db:"image"`
 	GroupID   int    `json:"group_id,omitempty" db:"group_id"`
 	GroupName string `json:"group_name,omitempty" db:"group_name"`
 	Username  string `json:"username,omitempty" db:"username"`

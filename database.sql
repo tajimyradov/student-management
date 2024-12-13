@@ -52,6 +52,8 @@ create table students
     gender     boolean,
     birth_date DATE         not null,
     image      varchar(128),
+    username varchar(128) not null ,
+    password varchar(128) not null ,
     group_id   integer references groups (id)
 );
 
