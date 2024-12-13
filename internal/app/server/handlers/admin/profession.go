@@ -113,8 +113,8 @@ func (h *Admin) getProfessions(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":   "",
-		"status":    "ok",
-		"faculties": res,
+		"message":     "",
+		"status":      "ok",
+		"professions": res,
 	})
 }
