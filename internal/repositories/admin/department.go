@@ -57,7 +57,7 @@ func (d *DepartmentRepository) UpdateDepartment(department models.Department) er
 
 func (d *DepartmentRepository) GetDepartmentById(id int) (models.Department, error) {
 	var department models.Department
-	query := `select d.id,d.name,d.code,d.faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id where d.id=$1`
+	query := `select d.id,d.name,d.code,coalesce(d.faculty_id,0),f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id where d.id=$1`
 	err := d.studentDB.Get(&department, query, id)
 	if err != nil {
 		return models.Department{}, err
@@ -108,9 +108,9 @@ func (d *DepartmentRepository) GetDepartments(input models.DepartmentSearch) (mo
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select d.id,d.name,d.code,d.faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id  where " + queryArgs
+		query = "select d.id,d.name,d.code,coalesce(d.faculty_id,0),f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id  where " + queryArgs
 	} else {
-		query = "select d.id,d.name,d.code,d.faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id"
+		query = "select d.id,d.name,d.code,coalesce(d.faculty_id,0),f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id"
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
