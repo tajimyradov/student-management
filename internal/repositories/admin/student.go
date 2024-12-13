@@ -77,7 +77,26 @@ func (s *StudentRepository) DeleteStudent(id int) error {
 
 func (s *StudentRepository) GetStudentByID(id int) (models.Student, error) {
 	var student models.Student
-	query := `select s.id,s.first_name, s.last_name, s.code, s.gender, s.username, s.password, s.group_id,s.birth_date,s.image,g.name as group_name from students as s join groups as g on g.id=s.group_id where s.id=$1`
+	query := `select s.id,
+				   s.first_name,
+				   s.last_name,
+				   s.code,
+				   s.gender,
+				   coalesce(s.username, '') as username,
+				   coalesce(s.password, '') as password,
+				   s.group_id,
+				   s.birth_date,
+				   coalesce(s.image, '')    as image,
+				   f.id,
+				   f.name,
+				   d.id,
+				   d.name,
+				   g.name                   as group_name
+			from students as s
+					 join groups as g on g.id = s.group_id
+					join professions as p on g.profession_id = p.id
+			join departments as d on p.department_id = d.id
+			join faculties as f on d.faculty_id = f.id where s.id=$1`
 	err := s.studentDB.Get(&student, query, id)
 	return student, err
 }
@@ -131,9 +150,51 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 	var query string
 
 	if argId > 1 || input.FirstName != "" || input.LastName != "" || input.Username != "" {
-		query = "select s.id,s.first_name, s.last_name, s.code, s.gender, coalesce(s.username,'') as username, coalesce(s.password,'') as password, s.group_id,s.birth_date,coalesce(s.image,'') as image,g.name as group_name from students as s join groups as g on g.id=s.group_id where " + queryArgs
+		query = `
+			select s.id,
+				   s.first_name,
+				   s.last_name,
+				   s.code,
+				   s.gender,
+				   coalesce(s.username, '') as username,
+				   coalesce(s.password, '') as password,
+				   s.group_id,
+				   s.birth_date,
+				   coalesce(s.image, '')    as image,
+				   f.id,
+				   f.name,
+				   d.id,
+				   d.name,
+				   g.name                   as group_name
+			from students as s
+					 join groups as g on g.id = s.group_id
+					join professions as p on g.profession_id = p.id
+			join departments as d on p.department_id = d.id
+			join faculties as f on d.faculty_id = f.id 
+			where ` + queryArgs
 	} else {
-		query = "select s.id,s.first_name, s.last_name, s.code, s.gender, coalesce(s.username,'') as username, coalesce(s.password,'') as password, s.group_id,s.birth_date,coalesce(s.image,'') as image,g.name as group_name from students as s join groups as g on g.id=s.group_id"
+		query = `
+			select s.id,
+				   s.first_name,
+				   s.last_name,
+				   s.code,
+				   s.gender,
+				   coalesce(s.username, '') as username,
+				   coalesce(s.password, '') as password,
+				   s.group_id,
+				   s.birth_date,
+				   coalesce(s.image, '')    as image,
+				   f.id,
+				   f.name,
+				   d.id,
+				   d.name,
+				   g.name                   as group_name
+			from students as s
+					 join groups as g on g.id = s.group_id
+					join professions as p on g.profession_id = p.id
+			join departments as d on p.department_id = d.id
+			join faculties as f on d.faculty_id = f.id
+		`
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
