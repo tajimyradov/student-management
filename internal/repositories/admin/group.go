@@ -40,7 +40,7 @@ func (g *GroupRepository) getPagination(query string, limit, page int) (models.P
 }
 
 func (g *GroupRepository) AddGroup(input models.Group) (models.Group, error) {
-	query := `insert into groups(name,code,year,profession_id) from ($1,$2,$3,$4) returning id`
+	query := `insert into groups(name,code,year,profession_id) values ($1,$2,$3,$4) returning id`
 	err := g.studentDB.QueryRow(query, input.Name, input.Code, input.Year, input.ProfessionID).Scan(&input.ID)
 	if err != nil {
 		return models.Group{}, err
