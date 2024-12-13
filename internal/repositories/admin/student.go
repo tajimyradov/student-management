@@ -87,10 +87,10 @@ func (s *StudentRepository) GetStudentByID(id int) (models.Student, error) {
 				   s.group_id,
 				   s.birth_date,
 				   coalesce(s.image, '')    as image,
-				   f.id,
-				   f.name,
-				   d.id,
-				   d.name,
+				   f.id as faculty_id,
+				   f.name as faculty_name,
+				   d.id as department_id,
+				   d.name as department_name,
 				   g.name                   as group_name
 			from students as s
 					 join groups as g on g.id = s.group_id
