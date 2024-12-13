@@ -75,7 +75,7 @@ func (t *TeacherRepository) DeleteTeacher(id int) error {
 
 func (t *TeacherRepository) GetTeacherByID(ID int) (models.Teacher, error) {
 	var teacher models.Teacher
-	query := `select t.id,t.first_name,t.last_name,t.code,t.gender,t.username,t.password,t.department_id,t.image,d.name as department_name from teachers as t join departments as d on d.id=t.department_id where id = $1`
+	query := `select t.id,t.first_name,t.last_name,t.code,t.gender,coalesce(t.username,''),coalesce(t.password,''),t.department_id,coalesce(t.image,''),d.name as department_name from teachers as t join departments as d on d.id=t.department_id where id = $1`
 	err := t.studentDB.Get(&teacher, query, ID)
 	return teacher, err
 }
@@ -123,9 +123,9 @@ func (t *TeacherRepository) GetTeachers(input models.TeacherSearch) (models.Teac
 	var query string
 
 	if argId > 1 || input.FirstName != "" || input.LastName != "" || input.Username != "" {
-		query = "select t.id,t.first_name,t.last_name,t.code,t.gender,t.username,t.password,t.department_id,t.image,d.name as department_name from teachers as t join departments as d on d.id=t.department_id where " + queryArgs
+		query = "select t.id,t.first_name,t.last_name,t.code,t.gender,coalesce(t.username,''),coalesce(t.password,''),t.department_id,coalesce(t.image,''),d.name as department_name from teachers as t join departments as d on d.id=t.department_id where " + queryArgs
 	} else {
-		query = "select t.id,t.first_name,t.last_name,t.code,t.gender,t.username,t.password,t.department_id,t.image,d.name as department_name from teachers as t join departments as d on d.id=t.department_id"
+		query = "select t.id,t.first_name,t.last_name,t.code,t.gender,coalesce(t.username,''),coalesce(t.password,''),t.department_id,coalesce(t.image,''),d.name as department_name from teachers as t join departments as d on d.id=t.department_id"
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
