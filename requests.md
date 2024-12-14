@@ -467,15 +467,46 @@ curl -X POST http://localhost:PORT/v1/signin \
 }'
 ```
 
-### get timetable
-```bash
-curl -X GET http://localhost:PORT/v1/timetable \
--H "Authorization: {token}"
-```
 
 ### get students
 ```bash
-curl -X GET "http://localhost:PORT/v1/students?group_id={groupID}&lesson_id={lessonID}&type_id={typeID}" \
+curl -X GET "http://localhost:PORT/v1/students?group_id={groupID}" \
+-H "Authorization: {token}"
+```
+
+### get faculties
+```bash
+curl -X GET "http://localhost:PORT/v1/faculties" \
+-H "Authorization: {token}"
+```
+
+### get departments
+```bash
+curl -X GET "http://localhost:PORT/v1/departments?faculty_id={groupID}" \
+-H "Authorization: {token}"
+```
+
+### get groups
+```bash
+curl -X GET "http://localhost:PORT/v1/groups?department_id={groupID}" \
+-H "Authorization: {token}"
+```
+
+### get lessons
+```bash
+curl -X GET "http://localhost:PORT/v1/lessons" \
+-H "Authorization: {token}"
+```
+
+### get types
+```bash
+curl -X GET "http://localhost:PORT/v1/types" \
+-H "Authorization: {token}"
+```
+
+### get times
+```bash
+curl -X GET "http://localhost:PORT/v1/times" \
 -H "Authorization: {token}"
 ```
 
@@ -488,11 +519,7 @@ curl -X POST "http://localhost:PORT/v1/check-students-for-existence" \
     "group_id": {groupID},
     "lesson_id": {lessonID},
     "time_id": {timeID},
-    "teacher_id": {teacherID},
     "type_id": {typeID},
-    "students": [
-        {"student_id": {studentID}, "is_absence": {true_or_false}},
-        {"student_id": {studentID}, "is_absence": {true_or_false}}
-    ]
+    "student_id": {studentID}
 }'
 ```

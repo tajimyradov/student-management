@@ -118,8 +118,7 @@ create table absences
     teacher_id int references teachers (id),
     type_id    int references types (id),
     date       date default now(),
-    status int default 0,
-    is_absent bool
+    status int default 0
 );
 
 CREATE MATERIALIZED VIEW timetable_view AS

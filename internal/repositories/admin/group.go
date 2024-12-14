@@ -49,7 +49,7 @@ func (g *GroupRepository) AddGroup(input models.Group) (models.Group, error) {
 }
 
 func (g *GroupRepository) UpdateGroup(input models.Group) error {
-	query := `update groups set name=$2, code=$2, year=$3, profession_id where id=$5`
+	query := `update groups set name=$1, code=$2, year=$3, profession_id=$4 where id=$5`
 	_, err := g.studentDB.Exec(query, input.Name, input.Code, input.Year, input.ProfessionID, input.ID)
 	if err != nil {
 		return err

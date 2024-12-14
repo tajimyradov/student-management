@@ -14,18 +14,6 @@ func (h *V1) getStudents(c *gin.Context) {
 		return
 	}
 
-	lessonID, err := strconv.Atoi(c.Query("lesson_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	typeID, err := strconv.Atoi(c.Query("type_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	value, ok := c.Get("claims")
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -34,15 +22,11 @@ func (h *V1) getStudents(c *gin.Context) {
 
 	claims := value.(models.UserClaims)
 
-	students, err := h.services.StudentService.GetStudents(claims.UserID, claims.RoleID, lessonID, groupID, typeID)
+	students, err := h.services.StudentService.GetStudents(claims.RoleID, groupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":  "",
-		"status":   "ok",
-		"students": students,
-	})
+	c.JSON(http.StatusOK, students)
 }
