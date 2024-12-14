@@ -54,6 +54,30 @@ func handlePermissions(c *gin.Context, claims *models.UserClaims) {
 		return
 	}
 
+	if requestURI == "/api/v1/faculties" && (claims.RoleID == 2 || claims.RoleID == 3) {
+		return
+	}
+
+	if requestURI == "/api/v1/departments" && (claims.RoleID == 2 || claims.RoleID == 3) {
+		return
+	}
+
+	if requestURI == "/api/v1/groups" && (claims.RoleID == 2 || claims.RoleID == 3) {
+		return
+	}
+
+	if requestURI == "/api/v1/lessons" && (claims.RoleID == 2 || claims.RoleID == 3) {
+		return
+	}
+
+	if requestURI == "/api/v1/types" && (claims.RoleID == 2 || claims.RoleID == 3) {
+		return
+	}
+
+	if requestURI == "/api/v1/times" && (claims.RoleID == 2 || claims.RoleID == 3) {
+		return
+	}
+
 	errorResponse(c, http.StatusForbidden, map[string]interface{}{
 		"status":  "error",
 		"message": `you have no permission to view resource`,
