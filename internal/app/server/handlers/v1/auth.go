@@ -13,16 +13,20 @@ func (h *V1) signIn(c *gin.Context) {
 		return
 	}
 
-	token, roleID, err := h.services.AuthService.SignIn(input.Username, input.Password)
+	token, roleID, firstName, lastName, image, err := h.services.AuthService.SignIn(input.Username, input.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "",
-		"status":  "ok",
-		"token":   token,
-		"role":    roleID,
+		"message":    "",
+		"status":     "ok",
+		"token":      token,
+		"role":       roleID,
+		"first_name": firstName,
+		"last_mame":  lastName,
+		"username":   input.Username,
+		"image":      image,
 	})
 }

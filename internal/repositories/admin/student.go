@@ -101,7 +101,7 @@ func (s *StudentRepository) GetStudentByID(id int) (models.Student, error) {
 	return student, err
 }
 
-func (s *StudentRepository) UpdateTeachersImage(image string, id int) error {
+func (s *StudentRepository) UpdateStudentsImage(image string, id int) error {
 	query := `update students set image=$1 where id=$2`
 	_, err := s.studentDB.Exec(query, image, id)
 	return err

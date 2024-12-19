@@ -24,8 +24,8 @@ func (s *StudentRepository) GetStudentsForTeacher(groupID int) ([]models.Student
 }
 
 func (s *StudentRepository) CheckForAbsence(input models.Absence) error {
-	query := `insert into absences(student_id,group_id, lesson_id,time_id, teacher_id, type_id, date,status)`
-	_, err := s.studentDB.Exec(query, input.StudentID, input.GroupID, input.LessonID, input.TimeID, input.TeacherID, input.TypeID, time.Now().Format(time.DateOnly), 1)
+	query := `insert into absences(student_id,group_id, lesson_id,time_id, teacher_id, type_id, date,status,note) values ($1,$2,$3,$4,$5,$6,$7,$8,$9) `
+	_, err := s.studentDB.Exec(query, input.StudentID, input.GroupID, input.LessonID, input.TimeID, input.TeacherID, input.TypeID, time.Now().Format(time.DateOnly), 1, input.Note)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (s *StudentRepository) GetTypes() ([]models.Type, error) {
 }
 
 func (s *StudentRepository) GetTimes() ([]models.Time, error) {
-	query := `select id,name from times`
+	query := `select id,start_time, end_time from times`
 	var times []models.Time
 	err := s.studentDB.Select(&times, query)
 	return times, err

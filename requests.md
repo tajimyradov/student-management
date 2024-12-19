@@ -391,6 +391,27 @@ curl -X POST http://localhost:PORT/admin/student/{sid}/image \
 -F "image=@/path/to/image.jpg"
 ```
 
+## Absence
+### get absents
+```bash
+curl -X POST http://localhost:8080/admin/absences \
+-H "Content-Type: application/json" \
+-H "Authorization: {token}" \
+-d '{
+  "faculty_id": 1,
+  "department_id": 2,
+  "group_id": 3,
+  "lesson_id": 4,
+  "type_id": 5,
+  "teacher_id": 6,
+  "student_id": 7,
+  "student_first_name": "John",
+  "student_last_name": "Doe",
+  "from": "2024-01-01",
+  "to": "2024-12-31"
+}'
+```
+
 ## Teacher 
 
 ### add Teacher
@@ -523,3 +544,5 @@ curl -X POST "http://localhost:PORT/v1/check-students-for-existence" \
     "student_id": {studentID}
 }'
 ```
+
+

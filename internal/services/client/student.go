@@ -18,12 +18,10 @@ func NewStudentService(repo *repository.StudentRepository, logger *zap.Logger) *
 	}
 }
 
-func (s *StudentService) GetStudents(roleID, groupID int) ([]models.Student, error) {
+func (s *StudentService) GetStudents(groupID int) ([]models.Student, error) {
 	var students []models.Student
 	var err error
-	if roleID == 2 || roleID == 3 {
-		students, err = s.repo.GetStudentsForTeacher(groupID)
-	}
+	students, err = s.repo.GetStudentsForTeacher(groupID)
 
 	if err != nil {
 		s.logger.Info("failed to get students", zap.Error(err))

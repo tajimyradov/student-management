@@ -4,6 +4,7 @@ http:
   readTimeout: 10s
   writeTimeout: 10s
 
+
 student_postgres:
   host: localhost
   port: 7432
@@ -14,3 +15,6 @@ student_postgres:
 secrets:
   access_secret: is9G63gdsHa73V62WfJ84
   password_salt: sj37dGtaH37dgF5D4a2bl
+
+domains:
+  image: http://172.16.23.26:8080/

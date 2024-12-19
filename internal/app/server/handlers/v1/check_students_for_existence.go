@@ -18,7 +18,7 @@ func (h *V1) checkStudentsForExistence(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	claims := value.(models.UserClaims)
+	claims := value.(*models.UserClaims)
 	input.TeacherID = claims.UserID
 
 	if !(claims.RoleID == 2 || claims.RoleID == 3) {

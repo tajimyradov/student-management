@@ -52,8 +52,8 @@ create table students
     gender     boolean,
     birth_date DATE         not null,
     image      varchar(128),
-    username varchar(128) not null ,
-    password varchar(128) not null ,
+    username   varchar(128) not null,
+    password   varchar(128) not null,
     group_id   integer references groups (id)
 );
 
@@ -95,7 +95,7 @@ create table types
 
 create table timetables
 (
-    id serial primary key ,
+    id              serial primary key,
     weekday         int not null,
     group_id        integer references groups (id),
     lesson_id       integer references lessons (id),
@@ -118,26 +118,78 @@ create table absences
     teacher_id int references teachers (id),
     type_id    int references types (id),
     date       date default now(),
-    status int default 0
+    status     int  default 0,
+    note       text
 );
+
+create MATERIALIZED VIEW absences_view as
+select a.id,
+
+       d.id          as department_id,
+       d.name        as department_name,
+       f.id          as faculty_id,
+       f.name        as faculty_name,
+
+
+       g.id          as group_id,
+       g.name        as group_name,
+       l.id          as lesson_id,
+
+       l.name        as lesson_name,
+       t.id          as time_id,
+       t.start_time,
+       t.end_time,
+       t2.id         as teacher_id,
+       t2.first_name as teacher_first_name,
+       t2.last_name  as teacher_last_name,
+       s.id          as student_id,
+       s.first_name  as student_first_name,
+       s.last_name   as student_last_name,
+       g.year        as student_year,
+       t4.first_name as faculty_dean_first_name,
+       t4.last_name  as faculty_dean_last_name,
+       t5.first_name as department_lead_first_name,
+       t5.last_name  as department_lead_last_name,
+       t3.id         as type_id,
+       t3.name       as type_name,
+       a.date,
+       a.status,
+       a.note
+
+from absences as a
+         join groups g on a.group_id = g.id
+         join lessons l on l.id = a.lesson_id
+         join students s on s.id = a.student_id
+         join times t on a.time_id = t.id
+         join teachers t2 on a.teacher_id = t2.id
+         join types t3 on a.type_id = t3.id
+         join professions p on g.profession_id = p.id
+         join departments d on p.department_id = d.id
+         join faculties f on d.faculty_id = f.id
+         join deans d2 on f.id = d2.faculty_id
+         join teachers as t4 on d2.teacher_id = t4.id
+         join department_leads dl on d.id = dl.department_id
+         join teachers as t5 on dl.teacher_id = t5.id
+order by a.date;
+
 
 CREATE MATERIALIZED VIEW timetable_view AS
 select t.weekday,
        t.group_id,
-       g.name as group_name,
+       g.name        as group_name,
        t.lesson_id,
-       l.name as lesson_name,
+       l.name        as lesson_name,
        t.time_id,
        ti.start_time as start_time,
-       ti.end_time as end_time,
+       ti.end_time   as end_time,
        t.auditory_id,
-       a.name as auditory_name,
+       a.name        as auditory_name,
        t.alt_lesson_id,
-       ll.name as alt_lesson_name,
+       ll.name       as alt_lesson_name,
        t.alt_auditory_id,
-       aa.name as alt_auditory_name,
+       aa.name       as alt_auditory_name,
        t.type_id,
-       ty.name as type_name
+       ty.name       as type_name
 from timetables as t
          join groups as g on g.id = t.group_id
          join lessons as l on l.id = t.lesson_id
@@ -147,3 +199,16 @@ from timetables as t
          left join lessons as ll on ll.id = t.alt_lesson_id
          left join auditories as aa on aa.id = t.alt_auditory_id
 order by t.weekday, t.time_id;
+
+
+create table deans
+(
+    faculty_id int references faculties (id),
+    teacher_id int references teachers (id)
+);
+
+create table department_leads
+(
+    department_id int references departments (id),
+    teacher_id    int references teachers (id)
+);

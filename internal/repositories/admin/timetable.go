@@ -1,7 +1,9 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/jmoiron/sqlx"
+	"strings"
 	"student-management/internal/models"
 )
 
@@ -86,4 +88,99 @@ func (t *TimetableRepository) GetTimetableOfGroup(groupID int) ([]models.Timetab
 	var timetables []models.Timetable
 	err := t.studentDB.Select(&timetables, query, groupID)
 	return timetables, err
+}
+
+func (t *TimetableRepository) GetAbsences(input models.AbsenceSearch) ([]models.Absence, error) {
+
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	query := `
+		select a.faculty_id,a.faculty_name, a.department_id, a.department_name,a.id,a.group_id, a.group_name,a.lesson_id, a.lesson_name, a.time_id,a.start_time, a.end_time,a.teacher_id, a.teacher_first_name, a.teacher_last_name,a.student_id, a.student_first_name, a.student_last_name,a.type_id, a.type_name, a.date,a.note, a.status
+		from absences_view as a where %s
+		`
+
+	if input.FacultyID != 0 {
+		setValues = append(setValues, fmt.Sprintf("a.faculty_id = $%d", argId))
+		args = append(args, input.FacultyID)
+		argId++
+	}
+
+	if input.DepartmentID != 0 {
+		setValues = append(setValues, fmt.Sprintf("a.department_id = $%d", argId))
+		args = append(args, input.DepartmentID)
+		argId++
+	}
+
+	if input.GroupID != 0 {
+		setValues = append(setValues, fmt.Sprintf("a.group_id = $%d", argId))
+		args = append(args, input.GroupID)
+		argId++
+	}
+
+	if input.TypeID != 0 {
+		setValues = append(setValues, fmt.Sprintf("a.type_id = $%d", argId))
+		args = append(args, input.TypeID)
+		argId++
+	}
+
+	if input.TeacherID != 0 {
+		setValues = append(setValues, fmt.Sprintf("a.teacher_id = $%d", argId))
+		args = append(args, input.TeacherID)
+		argId++
+	}
+
+	if input.StudentID != 0 {
+		setValues = append(setValues, fmt.Sprintf("a.student_id = $%d", argId))
+		args = append(args, input.StudentID)
+		argId++
+	}
+
+	if input.StudentFirstName != "" {
+		setValues = append(setValues, fmt.Sprintf("a.student_first_name like'%%%s%%'", input.StudentFirstName))
+	}
+
+	if input.StudentLastName != "" {
+		setValues = append(setValues, fmt.Sprintf("a.student_lasy_name like'%%%s%%'", input.StudentLastName))
+	}
+
+	setValues = append(setValues, fmt.Sprintf(`(date  between $%d and $%d) `, argId, argId+1))
+	args = append(args, input.From, input.To)
+	queryArgs := strings.Join(setValues, " and ")
+	query = fmt.Sprintf(query, queryArgs)
+
+	var res []models.Absence
+	err := t.studentDB.Select(&res, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+
+}
+
+func (t *TimetableRepository) UpdateAbsence(status, id int) error {
+	query := `update absence set status=$1 where id=$2`
+	_, err := t.studentDB.Exec(query, status, id)
+	return err
+}
+
+func (t *TimetableRepository) Sync() error {
+	query := `refresh materialized view  absences_view`
+	_, err := t.studentDB.Exec(query)
+	return err
+}
+
+func (t *TimetableRepository) GetAbsenceByID(id int) (models.Absence, error) {
+	query := `
+select a.student_year,a.faculty_dean_first_name,a.faculty_dean_last_name,a.department_lead_first_name,a.department_lead_last_name, a.faculty_id,a.faculty_name, a.department_id, a.department_name,a.id,a.group_id, a.group_name,a.lesson_id, a.lesson_name, a.time_id,a.start_time, a.end_time,a.teacher_id, a.teacher_first_name, a.teacher_last_name,a.student_id, a.student_first_name, a.student_last_name,a.type_id, a.type_name, a.date,a.note, a.status
+		from absences_view as a where a.id=$1
+	`
+	var res models.Absence
+	err := t.studentDB.Get(&res, query, id)
+	if err != nil {
+		return models.Absence{}, err
+	}
+	return res, nil
 }

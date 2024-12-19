@@ -82,7 +82,7 @@ func (s *StudentService) GetStudentByID(id int) (models.Student, error) {
 
 func (s *StudentService) UploadImageOfStudent(image image.Image, id int) error {
 	// Create a file path
-	filePath := fmt.Sprintf("images/%d.jpg", id)
+	filePath := fmt.Sprintf("images/student/%d.jpg", id)
 
 	// Create a file
 	file, err := os.Create(filePath)
@@ -99,7 +99,7 @@ func (s *StudentService) UploadImageOfStudent(image image.Image, id int) error {
 		return err
 	}
 
-	err = s.repo.UpdateTeachersImage(strconv.Itoa(id), id)
+	err = s.repo.UpdateStudentsImage(s.config.Domains.Image+"images/student/"+strconv.Itoa(id)+".jpg", id)
 	if err != nil {
 		s.logger.Info("update teachers failed", zap.Error(err))
 		return err

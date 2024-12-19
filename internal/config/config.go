@@ -9,6 +9,7 @@ type AppConfig struct {
 	HTTP      HTTP     `mapstructure:"http"`
 	StudentDB Postgres `mapstructure:"student_postgres"`
 	Secrets   Secrets  `mapstructure:"secrets"`
+	Domains   Domains  `mapstructure:"domains"`
 }
 
 type Postgres struct {
@@ -31,6 +32,10 @@ type HTTP struct {
 type Secrets struct {
 	AccessSecret string `mapstructure:"access_secret"`
 	PasswordSalt string `mapstructure:"password_salt"`
+}
+
+type Domains struct {
+	Image string `mapstructure:"image"`
 }
 
 func NewAppConfig(configFile string) (*AppConfig, error) {

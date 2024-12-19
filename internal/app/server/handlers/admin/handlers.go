@@ -121,4 +121,12 @@ func (h *Admin) Init(admin *gin.RouterGroup) {
 		timetable.GET("/:group_id", h.getTimetableOfGroup)
 	}
 
+	absence := admin.Group("/absence")
+	{
+		absence.POST("", h.getAbsences)
+		absence.POST("/:absence_id", h.updateAbsences)
+		absence.GET("/:absence_id", h.getAbsenceByID)
+		absence.POST("/sync", h.SyncAbsence)
+	}
+
 }

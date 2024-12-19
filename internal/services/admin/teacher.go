@@ -81,7 +81,7 @@ func (t *TeacherService) GetTeacherByID(id int) (models.Teacher, error) {
 
 func (t *TeacherService) UploadImageOfTeacher(image image.Image, id int) error {
 	// Create a file path
-	filePath := fmt.Sprintf("images/%d.jpg", id)
+	filePath := fmt.Sprintf("images/teacher/%d.jpg", id)
 
 	// Create a file
 	file, err := os.Create(filePath)
@@ -98,7 +98,7 @@ func (t *TeacherService) UploadImageOfTeacher(image image.Image, id int) error {
 		return err
 	}
 
-	err = t.repo.UpdateTeachersImage(strconv.Itoa(id), id)
+	err = t.repo.UpdateTeachersImage(t.config.Domains.Image+"images/teacher/"+strconv.Itoa(id)+".jpg", id)
 	if err != nil {
 		t.logger.Info("update teachers failed", zap.Error(err))
 		return err

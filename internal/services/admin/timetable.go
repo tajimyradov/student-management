@@ -71,3 +71,39 @@ func (t *TimetableService) GetStudentTeacherLessonBinding(teacherID, lessonID in
 	}
 	return res, nil
 }
+
+func (t *TimetableService) GetAbsences(input models.AbsenceSearch) ([]models.Absence, error) {
+	res, err := t.repo.GetAbsences(input)
+	if err != nil {
+		t.logger.Info("get absences failed", zap.Error(err))
+		return nil, err
+	}
+	return res, nil
+}
+
+func (t *TimetableService) UpdateAbsence(status, id int) error {
+	err := t.repo.UpdateAbsence(status, id)
+	if err != nil {
+		t.logger.Info("update absence failed", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func (t *TimetableService) Sync() error {
+	err := t.repo.Sync()
+	if err != nil {
+		t.logger.Info("sync timetable failed", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func (t *TimetableService) GetAbsenceByID(id int) (models.Absence, error) {
+	res, err := t.repo.GetAbsenceByID(id)
+	if err != nil {
+		t.logger.Info("get absence failed", zap.Error(err))
+		return models.Absence{}, err
+	}
+	return res, nil
+}
