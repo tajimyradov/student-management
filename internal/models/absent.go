@@ -28,6 +28,8 @@ type Absence struct {
 	DepartmentLeadLastName  string `json:"department_lead_last_name" db:"department_lead_last_name"`
 	Note                    string `json:"note" db:"note"`
 	Status                  int    `json:"status" db:"status"`
+	ProfessionID            int    `json:"profession_id" db:"profession_id"`
+	ProfessionName          string `json:"profession_name" db:"profession_name"`
 	Date                    string `json:"date" db:"date"`
 }
 

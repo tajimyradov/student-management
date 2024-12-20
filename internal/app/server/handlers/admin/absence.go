@@ -37,11 +37,11 @@ func (h *Admin) updateAbsences(c *gin.Context) {
 }
 
 func (h *Admin) SyncAbsence(c *gin.Context) {
-	err := h.services.TimetableService.Sync()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	//err := h.services.TimetableService.Sync()
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	//	return
+	//}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "ok",
 		"message": "",

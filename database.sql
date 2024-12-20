@@ -22,8 +22,9 @@ create table teachers
     gender        boolean,
     username      varchar(128) not null,
     password      varchar(128) not null,
-    image         varchar(128),
-    department_id integer references departments (id)
+    image         varchar(128) default '',
+    department_id integer references departments (id),
+    role_id int default 1
 );
 
 create table professions
@@ -153,6 +154,8 @@ select a.id,
        t3.id         as type_id,
        t3.name       as type_name,
        a.date,
+       p.id as profession_id,
+       p.name as profession_name,
        a.status,
        a.note
 

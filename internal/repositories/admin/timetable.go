@@ -97,7 +97,7 @@ func (t *TimetableRepository) GetAbsences(input models.AbsenceSearch) ([]models.
 	argId := 1
 
 	query := `
-		select a.faculty_id,a.faculty_name, a.department_id, a.department_name,a.id,a.group_id, a.group_name,a.lesson_id, a.lesson_name, a.time_id,a.start_time, a.end_time,a.teacher_id, a.teacher_first_name, a.teacher_last_name,a.student_id, a.student_first_name, a.student_last_name,a.type_id, a.type_name, a.date,a.note, a.status
+		select a.profession_id, a.profession_name,a.faculty_id,a.faculty_name, a.department_id, a.department_name,a.id,a.group_id, a.group_name,a.lesson_id, a.lesson_name, a.time_id,a.start_time, a.end_time,a.teacher_id, a.teacher_first_name, a.teacher_last_name,a.student_id, a.student_first_name, a.student_last_name,a.type_id, a.type_name, a.date,a.note, a.status
 		from absences_view as a where %s
 		`
 
@@ -161,7 +161,7 @@ func (t *TimetableRepository) GetAbsences(input models.AbsenceSearch) ([]models.
 }
 
 func (t *TimetableRepository) UpdateAbsence(status, id int) error {
-	query := `update absence set status=$1 where id=$2`
+	query := `update absences set status=$1 where id=$2`
 	_, err := t.studentDB.Exec(query, status, id)
 	return err
 }
@@ -174,7 +174,7 @@ func (t *TimetableRepository) Sync() error {
 
 func (t *TimetableRepository) GetAbsenceByID(id int) (models.Absence, error) {
 	query := `
-select a.student_year,a.faculty_dean_first_name,a.faculty_dean_last_name,a.department_lead_first_name,a.department_lead_last_name, a.faculty_id,a.faculty_name, a.department_id, a.department_name,a.id,a.group_id, a.group_name,a.lesson_id, a.lesson_name, a.time_id,a.start_time, a.end_time,a.teacher_id, a.teacher_first_name, a.teacher_last_name,a.student_id, a.student_first_name, a.student_last_name,a.type_id, a.type_name, a.date,a.note, a.status
+select a.profession_id, a.profession_name,a.student_year,a.faculty_dean_first_name,a.faculty_dean_last_name,a.department_lead_first_name,a.department_lead_last_name, a.faculty_id,a.faculty_name, a.department_id, a.department_name,a.id,a.group_id, a.group_name,a.lesson_id, a.lesson_name, a.time_id,a.start_time, a.end_time,a.teacher_id, a.teacher_first_name, a.teacher_last_name,a.student_id, a.student_first_name, a.student_last_name,a.type_id, a.type_name, a.date,a.note, a.status
 		from absences_view as a where a.id=$1
 	`
 	var res models.Absence

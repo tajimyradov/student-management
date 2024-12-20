@@ -4,17 +4,20 @@ import (
 	"go.uber.org/zap"
 	"student-management/internal/models"
 	repository "student-management/internal/repositories/admin"
+	"time"
 )
 
 type TimetableService struct {
-	repo   *repository.TimetableRepository
-	logger *zap.Logger
+	lastSync time.Time
+	repo     *repository.TimetableRepository
+	logger   *zap.Logger
 }
 
 func NewTimetableService(repo *repository.TimetableRepository, logger *zap.Logger) *TimetableService {
 	return &TimetableService{
-		logger: logger,
-		repo:   repo,
+		lastSync: time.Now(),
+		logger:   logger,
+		repo:     repo,
 	}
 }
 
@@ -73,6 +76,14 @@ func (t *TimetableService) GetStudentTeacherLessonBinding(teacherID, lessonID in
 }
 
 func (t *TimetableService) GetAbsences(input models.AbsenceSearch) ([]models.Absence, error) {
+	if time.Now().Sub(t.lastSync) >= time.Second*15 {
+		err := t.repo.Sync()
+		if err != nil {
+			t.logger.Info("sync timetable failed", zap.Error(err))
+			return nil, err
+		}
+	}
+
 	res, err := t.repo.GetAbsences(input)
 	if err != nil {
 		t.logger.Info("get absences failed", zap.Error(err))
@@ -90,14 +101,14 @@ func (t *TimetableService) UpdateAbsence(status, id int) error {
 	return nil
 }
 
-func (t *TimetableService) Sync() error {
-	err := t.repo.Sync()
-	if err != nil {
-		t.logger.Info("sync timetable failed", zap.Error(err))
-		return err
-	}
-	return nil
-}
+//func (t *TimetableService) Sync() error {
+//	err := t.repo.Sync()
+//	if err != nil {
+//		t.logger.Info("sync timetable failed", zap.Error(err))
+//		return err
+//	}
+//	return nil
+//}
 
 func (t *TimetableService) GetAbsenceByID(id int) (models.Absence, error) {
 	res, err := t.repo.GetAbsenceByID(id)
