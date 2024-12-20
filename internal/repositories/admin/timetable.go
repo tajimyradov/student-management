@@ -43,9 +43,9 @@ func (t *TimetableRepository) GetStudentTeacherLessonBinding(teacherID, lessonID
 }
 
 func (t *TimetableRepository) AddTimetable(input models.Timetable) error {
-	query := `insert into timetables(weekday,group_id,lesson_id, time_id, auditory_id,alt_lesson_id, alt_auditory_id,type) values ($1,$2,$3,$4,$5,$6,$7,$8)`
-	_, err := t.studentDB.Exec(query, input.Weekday, input.GroupID, input.LessonID, input.TimeID, input.AuditoryID, input.AltLessonID, input.AltAuditoryID, input.TypeID)
-	return err
+	//query := `insert into timetables(weekday,group_id,lesson_id, time_id, auditory_id,alt_lesson_id, alt_auditory_id,type) values ($1,$2,$3,$4,$5,$6,$7,$8)`
+	//_, err := t.studentDB.Exec(query, input.Weekday, input.GroupID, input.LessonID, input.TimeID, input.AuditoryID, input.AltLessonID, input.AltAuditoryID, input.TypeID)
+	return nil
 }
 
 func (t *TimetableRepository) DeleteTimetable(id int) error {
