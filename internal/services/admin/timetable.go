@@ -21,24 +21,6 @@ func NewTimetableService(repo *repository.TimetableRepository, logger *zap.Logge
 	}
 }
 
-func (t *TimetableService) AddStudentTeacherLessonBinding(input models.LessonTeacherStudent) error {
-	err := t.repo.AddStudentTeacherLessonBinding(input)
-	if err != nil {
-		t.logger.Info("add student teacher lesson binding failed", zap.Error(err))
-		return err
-	}
-	return nil
-}
-
-func (t *TimetableService) DeleteStudentTeacherLessonBinding(input models.LessonTeacherStudent) error {
-	err := t.repo.DeleteStudentTeacherLessonBinding(input)
-	if err != nil {
-		t.logger.Info("delete student teacher lesson binding failed", zap.Error(err))
-		return err
-	}
-	return nil
-}
-
 func (t *TimetableService) AddTimetable(input models.Timetable) error {
 	err := t.repo.AddTimetable(input)
 	if err != nil {

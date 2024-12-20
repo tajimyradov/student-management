@@ -17,18 +17,6 @@ func NewTimetableRepository(studentDB *sqlx.DB) *TimetableRepository {
 	}
 }
 
-func (t *TimetableRepository) AddStudentTeacherLessonBinding(input models.LessonTeacherStudent) error {
-	query := `insert into lesson_teacher_student_bindings(lesson_id, teacher_id, student_id,group_id,type_id) values ($1,$2,$3,$4,$5)`
-	_, err := t.studentDB.Exec(query, input.LessonID, input.TeacherID, input.StudentID, input.GroupID, input.TypeID)
-	return err
-}
-
-func (t *TimetableRepository) DeleteStudentTeacherLessonBinding(input models.LessonTeacherStudent) error {
-	query := `delete from lesson_teacher_student_bindings where lessong_id = $1 and teacher_id = $2 and student_id = $3 and group_id = $4 and type_id = $5`
-	_, err := t.studentDB.Exec(query, input.LessonID, input.TeacherID, input.StudentID, input.GroupID, input.TypeID)
-	return err
-}
-
 func (t *TimetableRepository) GetStudentTeacherLessonBinding(teacherID, lessonID int) (models.LessonTeacherStudent, error) {
 	query := `select ltsb.lesson_id,
 		   ltsb.teacher_id,

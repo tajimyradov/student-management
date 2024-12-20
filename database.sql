@@ -78,16 +78,6 @@ create table auditories
     name varchar(128) not null
 );
 
-create table lesson_teacher_student_bindings
-(
-    lesson_id  int references lessons (id),
-    teacher_id int references teachers (id),
-    student_id int references students (id),
-    group_id   int references groups (id),
-    type_id    int references types (id),
-    unique (lesson_id, teacher_id, student_id, group_id, type_id)
-);
-
 create table types
 (
     id   serial primary key,
@@ -99,14 +89,13 @@ create table timetables
     id              serial primary key,
     weekday         int not null,
     group_id        integer references groups (id),
-    lesson_id       integer references lessons (id),
-    time_id         integer references times (id),
-    auditory_id     integer references auditories (id),
 
-    alt_lesson_id   integer references lessons (id),
-    alt_auditory_id integer references auditories (id),
+    time_id         integer references times (id),
+
+lessons jsonb not null default '{}',
+
     type_id         int references types (id),
-    unique (weekday, group_id, lesson_id, time_id, auditory_id, alt_auditory_id, alt_lesson_id, type_id)
+    unique (weekday, group_id, time_id, type_id)
 );
 
 create table absences

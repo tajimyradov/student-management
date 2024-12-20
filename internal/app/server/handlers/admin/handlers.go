@@ -106,14 +106,6 @@ func (h *Admin) Init(admin *gin.RouterGroup) {
 		time.GET("", h.getTimes)
 	}
 
-	studentLessonTeacherBinding := admin.Group("/bind")
-	{
-		studentLessonTeacherBinding.GET("", h.getLessonTeacherStudentBinding)
-		studentLessonTeacherBinding.POST("", h.addLessonTeacherStudentBinding)
-		studentLessonTeacherBinding.DELETE("", h.deleteLessonTeacherStudentBinding)
-
-	}
-
 	timetable := admin.Group("/timetable")
 	{
 		timetable.POST("", h.addTimetable)

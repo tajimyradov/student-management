@@ -75,7 +75,7 @@ func (t *TeacherRepository) DeleteTeacher(id int) error {
 
 func (t *TeacherRepository) GetTeacherByID(ID int) (models.Teacher, error) {
 	var teacher models.Teacher
-	query := `select t.id,t.first_name,t.last_name,t.code,t.gender,coalesce(t.username,'') as username,coalesce(t.password,'') as password,t.department_id,coalesce(t.image,'') as image,d.name as department_name from teachers as t join departments as d on d.id=t.department_id where id = $1`
+	query := `select t.id,t.first_name,t.last_name,t.code,t.gender,coalesce(t.username,'') as username,coalesce(t.password,'') as password,t.department_id,coalesce(t.image,'') as image,d.name as department_name from teachers as t join departments as d on d.id=t.department_id where t.id = $1`
 	err := t.studentDB.Get(&teacher, query, ID)
 	return teacher, err
 }
