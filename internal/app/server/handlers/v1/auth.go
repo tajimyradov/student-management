@@ -25,7 +25,7 @@ func (h *V1) signIn(c *gin.Context) {
 		"token":      token,
 		"role":       roleID,
 		"first_name": firstName,
-		"last_mame":  lastName,
+		"last_name":  lastName,
 		"username":   input.Username,
 		"image":      image,
 	})
