@@ -68,8 +68,18 @@ func (t *TeacherRepository) UpdateTeacher(teacher models.Teacher) error {
 }
 
 func (t *TeacherRepository) DeleteTeacher(id int) error {
+	_, err := t.studentDB.Exec(`delete from deans where teacher_id=$1`, id)
+	if err != nil {
+		return err
+	}
+
+	_, err = t.studentDB.Exec(`delete from department_leads where teacher_id=$1`, id)
+	if err != nil {
+		return err
+	}
+
 	query := `delete from teachers where id = $1`
-	_, err := t.studentDB.Exec(query, id)
+	_, err = t.studentDB.Exec(query, id)
 	return err
 }
 
