@@ -6,7 +6,7 @@ http:
 
 
 student_postgres:
-  host: localhost
+  host: 172.16.23.26
   port: 7432
   username: postgres
   dbname: postgres

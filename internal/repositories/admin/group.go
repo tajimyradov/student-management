@@ -40,8 +40,8 @@ func (g *GroupRepository) getPagination(query string, limit, page int) (models.P
 }
 
 func (g *GroupRepository) AddGroup(input models.Group) (models.Group, error) {
-	query := `insert into groups(name,code,year,profession_id) values ($1,$2,$3,$4) returning id`
-	err := g.studentDB.QueryRow(query, input.Name, input.Code, input.Year, input.ProfessionID).Scan(&input.ID)
+	query := `insert into groups(name,code,year,profession_id,teacher_id) values ($1,$2,$3,$4,$5) returning id`
+	err := g.studentDB.QueryRow(query, input.Name, input.Code, input.Year, input.ProfessionID, input.TeacherID).Scan(&input.ID)
 	if err != nil {
 		return models.Group{}, err
 	}
@@ -49,8 +49,8 @@ func (g *GroupRepository) AddGroup(input models.Group) (models.Group, error) {
 }
 
 func (g *GroupRepository) UpdateGroup(input models.Group) error {
-	query := `update groups set name=$1, code=$2, year=$3, profession_id=$4 where id=$5`
-	_, err := g.studentDB.Exec(query, input.Name, input.Code, input.Year, input.ProfessionID, input.ID)
+	query := `update groups set name=$1, code=$2, year=$3, profession_id=$4,teacher_id=$5 where id=$6`
+	_, err := g.studentDB.Exec(query, input.Name, input.Code, input.Year, input.ProfessionID, input.TeacherID, input.ID)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (g *GroupRepository) DeleteGroup(id int) error {
 func (g *GroupRepository) GetGroupByID(id int) (models.Group, error) {
 
 	var group models.Group
-	query := `select g.id,g.name,g.code,g.year,g.profession_id, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id where g.id=$1`
+	query := `select g.id,g.name,g.code,g.year,g.profession_id,coalesce(g.teacher_id,0) as teacher_id,coalesce(t.first_name,'') as teacher_first_name, coalesce(t.last_name,'') as teacher_last_name, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id left join teachers as t on t.id=g.teacher_id where g.id=$1`
 	err := g.studentDB.Get(&group, query, id)
 	if err != nil {
 		return models.Group{}, err
@@ -89,26 +89,26 @@ func (g *GroupRepository) GetGroups(input models.GroupSearch) (models.GroupsAndP
 	}
 
 	if input.Code != "" {
-		setValues = append(setValues, fmt.Sprintf("g.code = $%d", argId))
-		args = append(args, input.Code)
+		setValues = append(setValues, fmt.Sprintf("g.code = %s", input.Code))
+		//args = append(args, input.Code)
 		argId++
 	}
 
 	if input.ID != 0 {
-		setValues = append(setValues, fmt.Sprintf("g.id = $%d", argId))
-		args = append(args, input.ID)
+		setValues = append(setValues, fmt.Sprintf("g.id = %d", input.ID))
+		//args = append(args, input.ID)
 		argId++
 	}
 
 	if input.ProfessionID != 0 {
-		setValues = append(setValues, fmt.Sprintf("g.profession_id = $%d", argId))
-		args = append(args, input.ID)
+		setValues = append(setValues, fmt.Sprintf("g.profession_id = %d", input.ProfessionID))
+		//args = append(args, input.ID)
 		argId++
 	}
 
 	if input.Year != 0 {
-		setValues = append(setValues, fmt.Sprintf("g.year = $%d", argId))
-		args = append(args, input.Year)
+		setValues = append(setValues, fmt.Sprintf("g.year = %d", input.Year))
+		//args = append(args, input.Year)
 		argId++
 	}
 
@@ -117,9 +117,9 @@ func (g *GroupRepository) GetGroups(input models.GroupSearch) (models.GroupsAndP
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select g.id,g.name,g.code,g.year,g.profession_id, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id where " + queryArgs
+		query = "select (select count(*) from students where group_id=g.id) as student_count,g.id,g.name,g.code,g.year,g.profession_id,coalesce(g.teacher_id,0) as teacher_id,coalesce(t.first_name,'') as teacher_first_name, coalesce(t.last_name,'') as teacher_last_name, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id left join teachers as t on t.id=g.teacher_id where " + queryArgs
 	} else {
-		query = "select g.id,g.name,g.code,g.year,g.profession_id, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id"
+		query = "select (select count(*) from students where group_id=g.id) as student_count,g.id,g.name,g.code,g.year,g.profession_id,coalesce(g.teacher_id,0) as teacher_id,coalesce(t.first_name,'') as teacher_first_name, coalesce(t.last_name,'') as teacher_last_name, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id left join teachers as t on t.id=g.teacher_id "
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)

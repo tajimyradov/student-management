@@ -40,7 +40,7 @@ func (s *StudentRepository) getPagination(query string, limit, page int) (models
 }
 
 func (s *StudentRepository) AddStudent(student models.Student) (models.Student, error) {
-	query := `insert into students(first_name, last_name, code, gender, username, password, group_id,birth_date) values ($1, $2, $3, $4, $5, $6, $7,$8) returning id`
+	query := `insert into students(first_name, last_name, code, gender, username, password, group_id,birth_date,region_id,middle_name) values ($1, $2, $3, $4, $5, $6, $7,$8,$9,$10) returning id`
 	err := s.studentDB.QueryRow(query,
 		student.FirstName,
 		student.LastName,
@@ -50,12 +50,14 @@ func (s *StudentRepository) AddStudent(student models.Student) (models.Student, 
 		student.Password,
 		student.GroupID,
 		student.BirthDate,
+		student.RegionID,
+		student.MiddleName,
 	).Scan(&student.ID)
 	return student, err
 }
 
 func (s *StudentRepository) UpdateStudent(student models.Student) error {
-	query := `update students set first_name=$1, last_name=$2, code=$3, gender=$4, username=$5, group_id=$6,birth_date=$7 where id=$8`
+	query := `update students set first_name=$1, last_name=$2, code=$3, gender=$4, username=$5, group_id=$6,birth_date=$7,region_id=$8,middle_name=$9 where id=$10`
 	_, err := s.studentDB.Exec(query,
 		student.FirstName,
 		student.LastName,
@@ -64,6 +66,8 @@ func (s *StudentRepository) UpdateStudent(student models.Student) error {
 		student.Username,
 		student.GroupID,
 		student.BirthDate,
+		student.RegionID,
+		student.MiddleName,
 		student.ID,
 	)
 	return err
@@ -80,6 +84,7 @@ func (s *StudentRepository) GetStudentByID(id int) (models.Student, error) {
 	query := `select s.id,
 				   s.first_name,
 				   s.last_name,
+				   s.middle_name,
 				   s.code,
 				   s.gender,
 				   coalesce(s.username, '') as username,
@@ -91,12 +96,16 @@ func (s *StudentRepository) GetStudentByID(id int) (models.Student, error) {
 				   f.name as faculty_name,
 				   d.id as department_id,
 				   d.name as department_name,
-				   g.name                   as group_name
+				   g.name                   as group_name,
+				   coalesce(r.id,0) as region_id,
+				   coalesce(r.name,'') as region_name
 			from students as s
 					 join groups as g on g.id = s.group_id
 					join professions as p on g.profession_id = p.id
 			join departments as d on p.department_id = d.id
-			join faculties as f on d.faculty_id = f.id where s.id=$1`
+			join faculties as f on d.faculty_id = f.id 
+			left join regions as r on s.region_id = r.id
+			where s.id=$1`
 	err := s.studentDB.Get(&student, query, id)
 	return student, err
 }
@@ -111,14 +120,9 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
-	if input.FirstName != "" {
-		setValues = append(setValues, fmt.Sprintf("s.first_name like'%%%s%%'", input.FirstName))
-		//args = append(args, input.Name)
-		//argId++
-	}
-
-	if input.LastName != "" {
-		setValues = append(setValues, fmt.Sprintf("s.last_name like'%%%s%%'", input.LastName))
+	if input.Name != "" {
+		input.Name = strings.ToLower(input.Name)
+		setValues = append(setValues, fmt.Sprintf("lower(s.first_name) like'%%%s%%' or lower(s.last_name) like'%%%s%%'  or lower(s.middle_name) like'%%%s%%' ", input.Name, input.Name, input.Name))
 		//args = append(args, input.Name)
 		//argId++
 	}
@@ -149,11 +153,12 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 
 	var query string
 
-	if argId > 1 || input.FirstName != "" || input.LastName != "" || input.Username != "" {
+	if argId > 1 || input.Name != "" || input.Username != "" {
 		query = `
 			select s.id,
 				   s.first_name,
 				   s.last_name,
+				   s.middle_name,
 				   s.code,
 				   s.gender,
 				   coalesce(s.username, '') as username,
@@ -165,18 +170,22 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 				   f.name as faculty_name,
 				   d.id as department_id,
 				   d.name as department_name,
-				   g.name                   as group_name
+				   g.name                   as group_name,
+				   coalesce(r.id,0) as region_id,
+				   coalesce(r.name,'') as region_name
 			from students as s
 					 join groups as g on g.id = s.group_id
 					join professions as p on g.profession_id = p.id
 			join departments as d on p.department_id = d.id
 			join faculties as f on d.faculty_id = f.id
+			left join regions as r on s.region_id = r.id
 			where ` + queryArgs
 	} else {
 		query = `
 			select s.id,
 				   s.first_name,
 				   s.last_name,
+				   s.middle_name,
 				   s.code,
 				   s.gender,
 				   coalesce(s.username, '') as username,
@@ -188,12 +197,15 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 				   f.name as faculty_name,
 				   d.id as department_id,
 				   d.name as department_name,
-				   g.name                   as group_name
+				   g.name                   as group_name,
+				   coalesce(r.id,0) as region_id,
+				   coalesce(r.name,'') as region_name
 			from students as s
 					 join groups as g on g.id = s.group_id
 					join professions as p on g.profession_id = p.id
 			join departments as d on p.department_id = d.id
 			join faculties as f on d.faculty_id = f.id
+			left join regions as r on s.region_id = r.id
 		`
 	}
 

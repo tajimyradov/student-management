@@ -78,6 +78,10 @@ func handlePermissions(c *gin.Context, claims *models.UserClaims) {
 		return
 	}
 
+	if requestURI == "/api/v1/positions" && (claims.RoleID == 2 || claims.RoleID == 3) {
+		return
+	}
+
 	errorResponse(c, http.StatusForbidden, map[string]interface{}{
 		"status":  "error",
 		"message": `you have no permission to view resource`,

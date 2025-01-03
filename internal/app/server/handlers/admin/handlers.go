@@ -121,4 +121,25 @@ func (h *Admin) Init(admin *gin.RouterGroup) {
 		absence.POST("/sync", h.SyncAbsence)
 	}
 
+	employeeRate := admin.Group("/employee")
+	{
+		employeeRate.GET("/rate", h.getEmployeeRate)
+		employeeRate.GET("/rate/:emp_id", h.getEmployeeRateByID)
+		employeeRate.POST("/rate", h.addEmployeeRate)
+		employeeRate.DELETE("/rate/:emp_id", h.deleteEmployeeRate)
+		employeeRate.PUT("/rate/:emp_id", h.updateEmployeeRate)
+	}
+
+	stats := admin.Group("/statistics")
+	{
+		stats.GET("/:faculty_id/gender", h.getStatisticsByGender)
+		stats.GET("/:faculty_id/profession", h.getStatisticsOfProfession)
+		stats.GET("/:faculty_id/age", h.getStatisticsByAge)
+		stats.GET("/:faculty_id/region", h.getStatisticsByRegions)
+
+	}
+
+	admin.GET("/positions", h.getPositions)
+
+	admin.GET("/regions", h.getRegions)
 }

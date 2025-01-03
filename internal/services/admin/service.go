@@ -17,6 +17,9 @@ type Service struct {
 	LessonService     *LessonService
 	TimeService       *TimeService
 	TimetableService  *TimetableService
+	EmployeeService   *EmployeeService
+	RegionService     *RegionService
+	StatisticsService *StatisticsService
 }
 
 type ServiceDeps struct {
@@ -38,5 +41,8 @@ func NewService(deps *ServiceDeps) *Service {
 		LessonService:     NewLessonService(deps.Repos.LessonRepository, deps.Logger),
 		TimeService:       NewTimeService(deps.Repos.TimeRepository, deps.Logger),
 		TimetableService:  NewTimetableService(deps.Repos.TimetableRepository, deps.Logger),
+		EmployeeService:   NewEmployeeService(deps.Repos.EmployeeRepository, deps.Logger),
+		RegionService:     NewRegionService(deps.Repos.RegionsRepository, deps.Logger),
+		StatisticsService: NewStatisticsService(deps.Repos.StatisticsRepository, deps.Logger),
 	}
 }

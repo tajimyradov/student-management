@@ -17,6 +17,9 @@ type Repository struct {
 	LessonRepository     *LessonRepository
 	TimeRepository       *TimeRepository
 	TimetableRepository  *TimetableRepository
+	EmployeeRepository   *EmployeeRepository
+	StatisticsRepository *StatisticsRepository
+	RegionsRepository    *RegionsRepository
 }
 
 func NewRepository(studentDB *sqlx.DB, config *config.AppConfig) *Repository {
@@ -31,5 +34,8 @@ func NewRepository(studentDB *sqlx.DB, config *config.AppConfig) *Repository {
 		LessonRepository:     NewLessonRepository(studentDB),
 		TimeRepository:       NewTimeRepository(studentDB),
 		TimetableRepository:  NewTimetableRepository(studentDB),
+		EmployeeRepository:   NewEmployeeRepository(studentDB),
+		StatisticsRepository: NewStatisticsRepository(studentDB),
+		RegionsRepository:    NewRegionsRepository(studentDB),
 	}
 }

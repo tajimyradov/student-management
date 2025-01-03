@@ -1,9 +1,10 @@
 package models
 
 type Faculty struct {
-	ID   int    `json:"id" db:"id"`
-	Name string `json:"name" db:"name"`
-	Code string `json:"code" db:"code"`
+	ID              int    `json:"id" db:"id"`
+	Name            string `json:"name" db:"name"`
+	Code            string `json:"code" db:"code"`
+	DepartmentCount int    `json:"department_count" db:"department_count"`
 }
 
 type FacultySearch struct {

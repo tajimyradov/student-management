@@ -93,3 +93,12 @@ func (s *StudentService) GetTimes() ([]models.Time, error) {
 	}
 	return res, nil
 }
+
+func (s *StudentService) GetPositions() ([]models.Position, error) {
+	res, err := s.repo.GetPositions()
+	if err != nil {
+		s.logger.Info("failed to get positions", zap.Error(err))
+		return nil, err
+	}
+	return res, nil
+}

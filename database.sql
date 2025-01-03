@@ -18,13 +18,14 @@ create table teachers
     id            serial primary key,
     first_name    varchar(128) not null,
     last_name     varchar(128) not null,
+    middle_name varchar(128) not null default '',
     code          varchar(128) default '',
     gender        boolean,
     username      varchar(128) not null,
     password      varchar(128) not null,
     image         varchar(128) default '',
     department_id integer references departments (id),
-    role_id int default 1
+    role_id       int          default 1
 );
 
 create table professions
@@ -41,6 +42,7 @@ create table groups
     name          varchar(128) not null,
     code          varchar(128) default '',
     year          smallint     not null,
+    teacher_id    integer references teachers (id),
     profession_id integer references professions (id)
 );
 
@@ -49,13 +51,15 @@ create table students
     id         serial primary key,
     first_name varchar(128) not null,
     last_name  varchar(128) not null,
+    middle_name varchar(128) not null default '',
     code       varchar(128) default '',
     gender     boolean,
     birth_date DATE         not null,
     image      varchar(128),
     username   varchar(128) not null,
     password   varchar(128) not null,
-    group_id   integer references groups (id)
+    group_id   integer references groups (id),
+    region_id  integer references regions (id)
 );
 
 create table times
@@ -86,15 +90,15 @@ create table types
 
 create table timetables
 (
-    id              serial primary key,
-    weekday         int not null,
-    group_id        integer references groups (id),
+    id       serial primary key,
+    weekday  int   not null,
+    group_id integer references groups (id),
 
-    time_id         integer references times (id),
+    time_id  integer references times (id),
 
-lessons jsonb not null default '{}',
+    lessons  jsonb not null default '{}',
 
-    type_id         int references types (id),
+    type_id  int references types (id),
     unique (weekday, group_id, time_id, type_id)
 );
 
@@ -143,8 +147,8 @@ select a.id,
        t3.id         as type_id,
        t3.name       as type_name,
        a.date,
-       p.id as profession_id,
-       p.name as profession_name,
+       p.id          as profession_id,
+       p.name        as profession_name,
        a.status,
        a.note
 
@@ -203,4 +207,30 @@ create table department_leads
 (
     department_id int references departments (id),
     teacher_id    int references teachers (id)
+);
+
+create table positions
+(
+    id   serial primary key,
+    name varchar(128)
+);
+
+
+create table employee_rate
+(
+    id          serial primary key,
+    first_name  varchar(128) not null default '',
+    last_name   varchar(128) not null default '',
+    position_id integer references positions (id),
+    "0.25" integer default 0,
+    "0.50" integer default 0,
+    "0.75" integer default 0,
+    "1.00" integer default 0,
+    partial integer default 0
+);
+
+create table regions
+(
+    id   serial primary key,
+    name varchar(128)
 );

@@ -86,21 +86,19 @@ func (h *Admin) getStudentByID(c *gin.Context) {
 // GetStudents handler
 func (h *Admin) getStudents(c *gin.Context) {
 	id, _ := strconv.Atoi(c.DefaultQuery("id", "0"))
-	firstName := c.Query("first_name")
-	lastName := c.Query("last_name")
+	name := c.Query("name")
 	username := c.Query("username")
 	code := c.Query("code")
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 
 	res, err := h.services.StudentService.GetStudents(models.StudentSearch{
-		ID:        id,
-		FirstName: firstName,
-		LastName:  lastName,
-		Username:  username,
-		Code:      code,
-		Limit:     limit,
-		Page:      page,
+		ID:       id,
+		Name:     name,
+		Username: username,
+		Code:     code,
+		Limit:    limit,
+		Page:     page,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

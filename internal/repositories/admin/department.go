@@ -76,30 +76,30 @@ func (d *DepartmentRepository) DeleteDepartment(id int) error {
 
 func (d *DepartmentRepository) GetDepartments(input models.DepartmentSearch) (models.DepartmentAndPagination, error) {
 	setValues := make([]string, 0)
-	args := make([]interface{}, 0)
+	//args := make([]interface{}, 0)
 	argId := 1
 
 	if input.Name != "" {
 		setValues = append(setValues, fmt.Sprintf("d.name like'%%%s%%'", input.Name))
 		//args = append(args, input.Name)
-		//argId++
+		argId++
 	}
 
 	if input.Code != "" {
-		setValues = append(setValues, fmt.Sprintf("d.code = $%d", argId))
-		args = append(args, input.Code)
+		setValues = append(setValues, fmt.Sprintf("d.code = '%s'", input.Code))
+		//args = append(args, input.Code)
 		argId++
 	}
 
 	if input.ID != 0 {
-		setValues = append(setValues, fmt.Sprintf("d.id = $%d", argId))
-		args = append(args, input.ID)
+		setValues = append(setValues, fmt.Sprintf("d.id = %d", input.ID))
+		//args = append(args, input.ID)
 		argId++
 	}
 
 	if input.FacultyID != 0 {
-		setValues = append(setValues, fmt.Sprintf("d.faculty_id = $%d", argId))
-		args = append(args, input.ID)
+		setValues = append(setValues, fmt.Sprintf("d.faculty_id = %d", input.FacultyID))
+		//args = append(args, input.FacultyID)
 		argId++
 	}
 
@@ -108,9 +108,9 @@ func (d *DepartmentRepository) GetDepartments(input models.DepartmentSearch) (mo
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select d.id,d.name,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id  where " + queryArgs
+		query = "select (select count(*) from teachers where department_id=d.id) as teachers_count,d.id,d.name,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id  where " + queryArgs
 	} else {
-		query = "select d.id,d.name,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id"
+		query = "select (select count(*) from teachers where department_id=d.id) as teachers_count,d.id,d.name,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id "
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
@@ -122,7 +122,7 @@ func (d *DepartmentRepository) GetDepartments(input models.DepartmentSearch) (mo
 	query += fmt.Sprintf(` limit %d offset %d`, input.Limit, offset)
 
 	var departments []models.Department
-	err = d.studentDB.Select(&departments, query, args...)
+	err = d.studentDB.Select(&departments, query)
 	if err != nil {
 		return models.DepartmentAndPagination{}, err
 	}

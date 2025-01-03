@@ -90,20 +90,20 @@ func (p *ProfessionRepository) GetProfessions(input models.ProfessionSearch) (mo
 	}
 
 	if input.Code != "" {
-		setValues = append(setValues, fmt.Sprintf("p.code = $%d", argId))
-		args = append(args, input.Code)
+		setValues = append(setValues, fmt.Sprintf("p.code = %s", input.Code))
+		//args = append(args, input.Code)
 		argId++
 	}
 
 	if input.ID != 0 {
-		setValues = append(setValues, fmt.Sprintf("p.id = $%d", argId))
-		args = append(args, input.ID)
+		setValues = append(setValues, fmt.Sprintf("p.id = %d", input.ID))
+		//args = append(args, input.ID)
 		argId++
 	}
 
 	if input.DepartmentID != 0 {
-		setValues = append(setValues, fmt.Sprintf("p.department_id = $%d", argId))
-		args = append(args, input.ID)
+		setValues = append(setValues, fmt.Sprintf("p.department_id = %d", input.DepartmentID))
+		//args = append(args, input.ID)
 		argId++
 	}
 
@@ -112,9 +112,9 @@ func (p *ProfessionRepository) GetProfessions(input models.ProfessionSearch) (mo
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id where " + queryArgs
+		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id where " + queryArgs
 	} else {
-		query = "select p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id"
+		query = "select (select count(*) from groups where profession_id=p.id) as group_count,p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id "
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)

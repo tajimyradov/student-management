@@ -6,6 +6,7 @@ type Profession struct {
 	Code           string `json:"code" db:"code"`
 	DepartmentID   int    `json:"department_id" db:"department_id"`
 	DepartmentName string `json:"department_name" db:"department_name"`
+	GroupCount     int    `json:"group_count" db:"group_count"`
 }
 
 type ProfessionSearch struct {

@@ -30,5 +30,6 @@ func (h *V1) Init(v1 *gin.RouterGroup) {
 	v1.GET("/lessons", h.getLessons)
 	v1.GET("/types", h.getTypes)
 	v1.GET("/times", h.getTimes)
+	v1.GET("/positions", h.getPositions)
 	v1.POST("/check-in", h.checkStudentsForExistence)
 }

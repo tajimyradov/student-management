@@ -73,3 +73,9 @@ func (s *StudentRepository) GetTimes() ([]models.Time, error) {
 	err := s.studentDB.Select(&times, query)
 	return times, err
 }
+
+func (s *StudentRepository) GetPositions() ([]models.Position, error) {
+	var positions []models.Position
+	err := s.studentDB.Select(&positions, `select id,name from positions`)
+	return positions, err
+}

@@ -80,19 +80,19 @@ func (f *FacultyRepository) GetFaculties(input models.FacultySearch) (models.Fac
 	argId := 1
 
 	if input.Name != "" {
-		setValues = append(setValues, fmt.Sprintf("name like'%%%s%%'", input.Name))
+		setValues = append(setValues, fmt.Sprintf("f.name like'%%%s%%'", input.Name))
 		//args = append(args, input.Name)
 		//argId++
 	}
 
 	if input.Code != "" {
-		setValues = append(setValues, fmt.Sprintf("code = $%d", argId))
+		setValues = append(setValues, fmt.Sprintf("f.code = $%d", argId))
 		args = append(args, input.Code)
 		argId++
 	}
 
 	if input.ID != 0 {
-		setValues = append(setValues, fmt.Sprintf("id = $%d", argId))
+		setValues = append(setValues, fmt.Sprintf("f.id = $%d", argId))
 		args = append(args, input.ID)
 		argId++
 	}
@@ -102,9 +102,9 @@ func (f *FacultyRepository) GetFaculties(input models.FacultySearch) (models.Fac
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select id,name,code from faculties where " + queryArgs
+		query = "select f.id,f.name,f.code,(select count(*) from departments where faculty_id=f.id) as department_count from faculties as f where " + queryArgs
 	} else {
-		query = "select id,name,code from faculties"
+		query = "select f.id,f.name,f.code,(select count(*) from departments where faculty_id=f.id) as department_count from faculties as f "
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
@@ -113,7 +113,7 @@ func (f *FacultyRepository) GetFaculties(input models.FacultySearch) (models.Fac
 		return models.FacultiesAndPagination{}, err
 	}
 
-	query += fmt.Sprintf(` limit %d offset %d`, input.Limit, offset)
+	query += fmt.Sprintf(`order by f.id  limit %d offset %d`, input.Limit, offset)
 
 	var faculties []models.Faculty
 	err = f.studentDB.Select(&faculties, query, args...)
