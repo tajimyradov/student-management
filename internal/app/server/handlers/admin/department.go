@@ -118,3 +118,63 @@ func (h *Admin) getDepartments(c *gin.Context) {
 		"departments": res,
 	})
 }
+
+func (h *Admin) uploadFileOfDepartment(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("did"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	name := c.PostForm("name")
+
+	err = h.services.DepartmentService.UploadFile(id, file, name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "", "status": "ok"})
+}
+
+func (h *Admin) deleteFileOfDepartment(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("did"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.services.DepartmentService.DeleteFile(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "", "status": "ok"})
+}
+
+func (h *Admin) getDepartmentInfo(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("did"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := h.services.DepartmentService.GetDepartmentInfo(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "",
+		"status":  "ok",
+		"info":    res,
+	})
+}

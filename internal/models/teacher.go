@@ -21,6 +21,7 @@ type TeacherSearch struct {
 	Name         string `json:"name" db:"name"`
 	Code         string `json:"code" db:"code"`
 	Username     string `json:"username" db:"username"`
+	FacultyID    int    `json:"faculty_id" db:"faculty_id"`
 	DepartmentId int    `json:"department_id" db:"department_id"`
 	Page         int    `json:"page" db:"page"`
 	Limit        int    `json:"limit" db:"limit"`

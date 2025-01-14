@@ -22,14 +22,16 @@ type Student struct {
 }
 
 type StudentSearch struct {
-	ID        int    `json:"id" db:"id"`
-	Name      string `json:"name" db:"name"`
-	Code      string `json:"code" db:"code"`
-	BirthDate string `json:"birth_date" db:"birth_date"`
-	Username  string `json:"username" db:"username"`
-	GroupID   int    `json:"group_id" db:"group_id"`
-	Page      int    `json:"page" db:"page"`
-	Limit     int    `json:"limit" db:"limit"`
+	ID           int    `json:"id" db:"id"`
+	Name         string `json:"name" db:"name"`
+	Code         string `json:"code" db:"code"`
+	BirthDate    string `json:"birth_date" db:"birth_date"`
+	Username     string `json:"username" db:"username"`
+	FacultyID    int    `json:"faculty_id" db:"faculty_id"`
+	ProfessionID int    `json:"profession_id" db:"profession_id"`
+	GroupID      int    `json:"group_id" db:"group_id"`
+	Page         int    `json:"page" db:"page"`
+	Limit        int    `json:"limit" db:"limit"`
 }
 
 type StudentsAndPagination struct {

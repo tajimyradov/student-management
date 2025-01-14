@@ -116,3 +116,63 @@ func (h *Admin) getFaculties(c *gin.Context) {
 		"faculties": res,
 	})
 }
+
+func (h *Admin) uploadFileOfFaculty(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("fid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	name := c.PostForm("name")
+
+	err = h.services.FacultyService.UploadFile(id, file, name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "", "status": "ok"})
+}
+
+func (h *Admin) deleteFileOfFaculty(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("fid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.services.FacultyService.DeleteFile(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "", "status": "ok"})
+}
+
+func (h *Admin) getFacultyInfo(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("fid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := h.services.FacultyService.GetFacultyInfo(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "",
+		"status":  "ok",
+		"info":    res,
+	})
+}

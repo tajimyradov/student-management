@@ -105,14 +105,14 @@ func (t *TeacherRepository) GetTeachers(input models.TeacherSearch) (models.Teac
 	}
 
 	if input.Code != "" {
-		setValues = append(setValues, fmt.Sprintf("t.code = $%d", argId))
-		args = append(args, input.Code)
+		setValues = append(setValues, fmt.Sprintf("t.code = %s", input.Code))
+		//args = append(args, input.Code)
 		argId++
 	}
 
 	if input.ID != 0 {
-		setValues = append(setValues, fmt.Sprintf("t.id = $%d", argId))
-		args = append(args, input.ID)
+		setValues = append(setValues, fmt.Sprintf("t.id = %d", input.ID))
+		//args = append(args, input.ID)
 		argId++
 	}
 
@@ -121,8 +121,18 @@ func (t *TeacherRepository) GetTeachers(input models.TeacherSearch) (models.Teac
 	}
 
 	if input.DepartmentId != 0 {
-		setValues = append(setValues, fmt.Sprintf("t.department_id = $%d", argId))
-		args = append(args, input.DepartmentId)
+		setValues = append(setValues, fmt.Sprintf("t.department_id = %d", input.DepartmentId))
+		//args = append(args, input.DepartmentId)
+		argId++
+	}
+
+	if input.FacultyID != 0 {
+		setValues = append(setValues, fmt.Sprintf("f.id = %d", input.FacultyID))
+		argId++
+	}
+
+	if input.DepartmentId != 0 {
+		setValues = append(setValues, fmt.Sprintf("d.id = %d", input.DepartmentId))
 		argId++
 	}
 
@@ -131,9 +141,9 @@ func (t *TeacherRepository) GetTeachers(input models.TeacherSearch) (models.Teac
 	var query string
 
 	if argId > 1 || input.Name != "" || input.Username != "" {
-		query = "select t.id,t.first_name,t.middle_name,t.last_name,t.code,t.gender,coalesce(t.username,'') as username,coalesce(t.password,'') as password,t.department_id,coalesce(t.image,'') as image,d.name as department_name, coalesce(g.id,0) as group_id, coalesce(g.name,'') as group_name from teachers as t join departments as d on d.id=t.department_id left join groups as g on g.teacher_id=t.id where " + queryArgs
+		query = "select t.id,t.first_name,t.middle_name,t.last_name,t.code,t.gender,coalesce(t.username,'') as username,coalesce(t.password,'') as password,t.department_id,coalesce(t.image,'') as image,d.name as department_name, coalesce(g.id,0) as group_id, coalesce(g.name,'') as group_name from teachers as t join departments as d on d.id=t.department_id join faculties as f on d.faculty_id = f.id left join groups as g on g.teacher_id=t.id where " + queryArgs
 	} else {
-		query = "select t.id,t.first_name,t.middle_name,t.last_name,t.code,t.gender,coalesce(t.username,'') as username,coalesce(t.password,'') as password,t.department_id,coalesce(t.image,'') as image,d.name as department_name, coalesce(g.id,0) as group_id, coalesce(g.name,'') as group_name from teachers as t join departments as d on d.id=t.department_id left join groups as g on g.teacher_id=t.id "
+		query = "select t.id,t.first_name,t.middle_name,t.last_name,t.code,t.gender,coalesce(t.username,'') as username,coalesce(t.password,'') as password,t.department_id,coalesce(t.image,'') as image,d.name as department_name, coalesce(g.id,0) as group_id, coalesce(g.name,'') as group_name from teachers as t join departments as d on d.id=t.department_id join faculties as f on d.faculty_id = f.id left join groups as g on g.teacher_id=t.id "
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)

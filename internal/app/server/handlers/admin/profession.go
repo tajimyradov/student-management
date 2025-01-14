@@ -96,6 +96,7 @@ func (h *Admin) getProfessions(c *gin.Context) {
 	name := c.Query("name")
 	code := c.Query("code")
 	departmentID, _ := strconv.Atoi(c.Query("department_id"))
+	facultyID, _ := strconv.Atoi(c.Query("faculty_id"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 
@@ -103,6 +104,7 @@ func (h *Admin) getProfessions(c *gin.Context) {
 		ID:           id,
 		Name:         name,
 		Code:         code,
+		FacultyID:    facultyID,
 		Limit:        limit,
 		DepartmentID: departmentID,
 		Page:         page,
@@ -116,5 +118,65 @@ func (h *Admin) getProfessions(c *gin.Context) {
 		"message":     "",
 		"status":      "ok",
 		"professions": res,
+	})
+}
+
+func (h *Admin) uploadFileOfProfession(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("pid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	name := c.PostForm("name")
+
+	err = h.services.ProfessionService.UploadFile(id, file, name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "", "status": "ok"})
+}
+
+func (h *Admin) deleteFileOfProfession(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("pid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.services.ProfessionService.DeleteFile(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "", "status": "ok"})
+}
+
+func (h *Admin) getProfessionInfo(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("pid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := h.services.ProfessionService.GetProfessionInfo(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "",
+		"status":  "ok",
+		"info":    res,
 	})
 }

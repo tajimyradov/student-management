@@ -112,14 +112,19 @@ func (g *GroupRepository) GetGroups(input models.GroupSearch) (models.GroupsAndP
 		argId++
 	}
 
+	if input.FacultyID != 0 {
+		setValues = append(setValues, fmt.Sprintf("f.faculty_id = %d", input.FacultyID))
+		argId++
+	}
+
 	queryArgs := strings.Join(setValues, " and ")
 
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select (select count(*) from students where group_id=g.id) as student_count,g.id,g.name,g.code,g.year,g.profession_id,coalesce(g.teacher_id,0) as teacher_id,coalesce(t.first_name,'') as teacher_first_name, coalesce(t.last_name,'') as teacher_last_name, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id left join teachers as t on t.id=g.teacher_id where " + queryArgs
+		query = "select (select count(*) from students where group_id=g.id) as student_count,g.id,g.name,g.code,g.year,g.profession_id,coalesce(g.teacher_id,0) as teacher_id,coalesce(t.first_name,'') as teacher_first_name, coalesce(t.last_name,'') as teacher_last_name, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id left join teachers as t on t.id=g.teacher_id where " + queryArgs
 	} else {
-		query = "select (select count(*) from students where group_id=g.id) as student_count,g.id,g.name,g.code,g.year,g.profession_id,coalesce(g.teacher_id,0) as teacher_id,coalesce(t.first_name,'') as teacher_first_name, coalesce(t.last_name,'') as teacher_last_name, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id left join teachers as t on t.id=g.teacher_id "
+		query = "select (select count(*) from students where group_id=g.id) as student_count,g.id,g.name,g.code,g.year,g.profession_id,coalesce(g.teacher_id,0) as teacher_id,coalesce(t.first_name,'') as teacher_first_name, coalesce(t.last_name,'') as teacher_last_name, p.name as profession_name from groups as g join professions as p on p.id =g.profession_id join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id left join teachers as t on t.id=g.teacher_id "
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)

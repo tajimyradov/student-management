@@ -4,16 +4,19 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strings"
+	"student-management/internal/config"
 	"student-management/internal/models"
 )
 
 type ProfessionRepository struct {
 	studentDB *sqlx.DB
+	config    *config.AppConfig
 }
 
-func NewProfessionRepository(studentDB *sqlx.DB) *ProfessionRepository {
+func NewProfessionRepository(studentDB *sqlx.DB, config *config.AppConfig) *ProfessionRepository {
 	return &ProfessionRepository{
 		studentDB: studentDB,
+		config:    config,
 	}
 }
 
@@ -107,14 +110,19 @@ func (p *ProfessionRepository) GetProfessions(input models.ProfessionSearch) (mo
 		argId++
 	}
 
+	if input.FacultyID != 0 {
+		setValues = append(setValues, fmt.Sprintf("f.faculty_id = %d", input.FacultyID))
+		argId++
+	}
+
 	queryArgs := strings.Join(setValues, " and ")
 
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id where " + queryArgs
+		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id where " + queryArgs
 	} else {
-		query = "select (select count(*) from groups where profession_id=p.id) as group_count,p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id "
+		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id"
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
@@ -136,4 +144,79 @@ func (p *ProfessionRepository) GetProfessions(input models.ProfessionSearch) (mo
 		Pagination:  pagination,
 	}, nil
 
+}
+
+func (p *ProfessionRepository) AddFile(id int, fileURL string, name string) error {
+	query := `insert into profession_files (profession_id, file_url,name) values ($1, $2,$3)`
+	_, err := p.studentDB.Exec(query, id, fileURL, name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ProfessionRepository) DeleteFile(id int) error {
+	query := `delete from profession_files where id = $1`
+	_, err := p.studentDB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ProfessionRepository) GetFileByID(id int) (string, error) {
+	var res string
+	query := `select file_url from profession_files where id = $1`
+	err := p.studentDB.Get(&res, query, id)
+	if err != nil {
+		return "", err
+	}
+	return res, nil
+}
+
+func (p *ProfessionRepository) GetAllFiles(id int) ([]models.File, error) {
+	var files []models.File
+	query := fmt.Sprintf(`select id,'%s' || file_url as file_url,name from profession_files where profession_id = $1`, p.config.Domains.File)
+	err := p.studentDB.Select(&files, query, id)
+	if err != nil {
+		return []models.File{}, err
+	}
+
+	return files, nil
+}
+
+func (p *ProfessionRepository) GetStudents(id int) (int, error) {
+	var studentsCount int
+	query := `
+			select count(*)
+			from students as s
+					 join groups as g on g.id = s.group_id
+					join professions as p on g.profession_id = p.id
+			where p.id = $1
+		`
+	err := p.studentDB.Get(&studentsCount, query, id)
+	if err != nil {
+		return 0, err
+	}
+	return studentsCount, nil
+}
+
+func (p *ProfessionRepository) GetGroups(id int) ([]models.Group, error) {
+	query := `
+		select 
+			   g.id,
+			   g.name,
+			   g.code,
+			   g.year,
+			   g.profession_id
+		from groups as g
+				 join professions as p on p.id = g.profession_id
+		where p.id = $1
+		`
+	var groups []models.Group
+	err := p.studentDB.Select(&groups, query, id)
+	if err != nil {
+		return []models.Group{}, err
+	}
+	return groups, nil
 }

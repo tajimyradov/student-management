@@ -1,8 +1,9 @@
 create table faculties
 (
-    id   serial primary key,
-    name varchar(128) not null,
-    code varchar(128) default ''
+    id       serial primary key,
+    position integer      default 0,
+    name     varchar(128) not null,
+    code     varchar(128) default ''
 );
 
 create table departments
@@ -18,14 +19,14 @@ create table teachers
     id            serial primary key,
     first_name    varchar(128) not null,
     last_name     varchar(128) not null,
-    middle_name varchar(128) not null default '',
-    code          varchar(128) default '',
+    middle_name   varchar(128) not null default '',
+    code          varchar(128)          default '',
     gender        boolean,
     username      varchar(128) not null,
     password      varchar(128) not null,
-    image         varchar(128) default '',
+    image         varchar(128)          default '',
     department_id integer references departments (id),
-    role_id       int          default 1
+    role_id       int                   default 1
 );
 
 create table professions
@@ -48,18 +49,18 @@ create table groups
 
 create table students
 (
-    id         serial primary key,
-    first_name varchar(128) not null,
-    last_name  varchar(128) not null,
+    id          serial primary key,
+    first_name  varchar(128) not null,
+    last_name   varchar(128) not null,
     middle_name varchar(128) not null default '',
-    code       varchar(128) default '',
-    gender     boolean,
-    birth_date DATE         not null,
-    image      varchar(128),
-    username   varchar(128) not null,
-    password   varchar(128) not null,
-    group_id   integer references groups (id),
-    region_id  integer references regions (id)
+    code        varchar(128)          default '',
+    gender      boolean,
+    birth_date  DATE         not null,
+    image       varchar(128),
+    username    varchar(128) not null,
+    password    varchar(128) not null,
+    group_id    integer references groups (id),
+    region_id   integer references regions (id)
 );
 
 create table times
@@ -164,7 +165,7 @@ from absences as a
          join faculties f on d.faculty_id = f.id
          join deans d2 on f.id = d2.faculty_id
          join teachers as t4 on d2.teacher_id = t4.id
-         join department_leads dl on d.id = dl.department_id
+         join department_leads dl on dl.department_id = t2.department_id
          join teachers as t5 on dl.teacher_id = t5.id
 order by a.date;
 
@@ -222,11 +223,11 @@ create table employee_rate
     first_name  varchar(128) not null default '',
     last_name   varchar(128) not null default '',
     position_id integer references positions (id),
-    "0.25" integer default 0,
-    "0.50" integer default 0,
-    "0.75" integer default 0,
-    "1.00" integer default 0,
-    partial integer default 0
+    "0.25"      integer               default 0,
+    "0.50"      integer               default 0,
+    "0.75"      integer               default 0,
+    "1.00"      integer               default 0,
+    partial     integer               default 0
 );
 
 create table regions
@@ -234,3 +235,28 @@ create table regions
     id   serial primary key,
     name varchar(128)
 );
+
+create table faculty_files
+(
+    id serial primary key ,
+    faculty_id integer references faculties(id),
+    file_url varchar(128) not null ,
+    name varchar(128) not null
+);
+
+create table department_files
+(
+    id serial primary key ,
+    department_id integer references departments(id),
+    file_url varchar(128) not null ,
+    name varchar(128) not null
+);
+
+create table profession_files
+(
+    id serial primary key ,
+    profession_id integer references professions(id),
+    file_url varchar(128) not null ,
+    name varchar(128) not null
+);
+

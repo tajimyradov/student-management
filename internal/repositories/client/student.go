@@ -33,7 +33,7 @@ func (s *StudentRepository) CheckForAbsence(input models.Absence) error {
 }
 
 func (s *StudentRepository) GetFaculties() ([]models.Faculty, error) {
-	query := `select id,name from faculties`
+	query := `select id,name from faculties order by position asc`
 	var faculties []models.Faculty
 	err := s.studentDB.Select(&faculties, query)
 	return faculties, err

@@ -128,15 +128,13 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 	}
 
 	if input.Code != "" {
-		setValues = append(setValues, fmt.Sprintf("s.code = $%d", argId))
-		args = append(args, input.Code)
-		argId++
+		setValues = append(setValues, fmt.Sprintf("s.code = %s", input.Code))
 	}
 
 	if input.ID != 0 {
-		setValues = append(setValues, fmt.Sprintf("s.id = $%d", argId))
-		args = append(args, input.ID)
-		argId++
+		setValues = append(setValues, fmt.Sprintf("s.id = %d", input.ID))
+		//args = append(args, input.ID)
+		//argId++
 	}
 
 	if input.Username != "" {
@@ -144,8 +142,23 @@ func (s *StudentRepository) GetStudents(input models.StudentSearch) (models.Stud
 	}
 
 	if input.BirthDate != "" {
-		setValues = append(setValues, fmt.Sprintf("s.birth_date = $%d", argId))
-		args = append(args, input.BirthDate)
+		setValues = append(setValues, fmt.Sprintf("s.birth_date = %s", input.BirthDate))
+		//args = append(args, input.BirthDate)
+		//argId++
+	}
+
+	if input.FacultyID != 0 {
+		setValues = append(setValues, fmt.Sprintf("f.id = %d", input.FacultyID))
+		argId++
+	}
+
+	if input.GroupID != 0 {
+		setValues = append(setValues, fmt.Sprintf("g.id = %d", input.GroupID))
+		argId++
+	}
+
+	if input.ProfessionID != 0 {
+		setValues = append(setValues, fmt.Sprintf("p.id = %d", input.ProfessionID))
 		argId++
 	}
 

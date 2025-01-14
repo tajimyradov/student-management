@@ -91,14 +91,18 @@ func (h *Admin) getTeachers(c *gin.Context) {
 	code := c.Query("code")
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	departmentID, _ := strconv.Atoi(c.DefaultQuery("department_id", "0"))
+	facultyID, _ := strconv.Atoi(c.DefaultQuery("faculty_id", "0"))
 
 	res, err := h.services.TeacherService.GetTeachers(models.TeacherSearch{
-		ID:       id,
-		Name:     name,
-		Username: username,
-		Code:     code,
-		Limit:    limit,
-		Page:     page,
+		ID:           id,
+		FacultyID:    facultyID,
+		Name:         name,
+		Username:     username,
+		Code:         code,
+		DepartmentId: departmentID,
+		Limit:        limit,
+		Page:         page,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

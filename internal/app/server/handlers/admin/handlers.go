@@ -30,6 +30,9 @@ func (h *Admin) Init(admin *gin.RouterGroup) {
 		faculty.DELETE("/:fid", h.deleteFaculty)
 		faculty.GET("/:fid", h.getFacultyByID)
 		faculty.GET("", h.getFaculties)
+		faculty.POST("/:fid/file", h.uploadFileOfFaculty)
+		faculty.DELETE("/file/:fid", h.deleteFileOfFaculty)
+		faculty.GET("/:fid/info", h.getFacultyInfo)
 	}
 
 	department := admin.Group("/department")
@@ -39,6 +42,9 @@ func (h *Admin) Init(admin *gin.RouterGroup) {
 		department.DELETE("/:did", h.deleteDepartment)
 		department.GET("/:did", h.getDepartmentByID)
 		department.GET("", h.getDepartments)
+		department.POST("/:did/file", h.uploadFileOfDepartment)
+		department.DELETE("/file/:did", h.deleteFileOfDepartment)
+		department.GET("/:did/info", h.getDepartmentInfo)
 	}
 
 	profession := admin.Group("/profession")
@@ -48,6 +54,9 @@ func (h *Admin) Init(admin *gin.RouterGroup) {
 		profession.DELETE("/:pid", h.deleteProfession)
 		profession.GET("/:pid", h.getProfessionByID)
 		profession.GET("", h.getProfessions)
+		profession.POST("/:pid/file", h.uploadFileOfProfession)
+		profession.DELETE("/file/:pid", h.deleteFileOfProfession)
+		profession.GET("/:pid/info", h.getProfessionInfo)
 	}
 
 	group := admin.Group("/group")

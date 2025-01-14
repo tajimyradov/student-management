@@ -36,6 +36,7 @@ type Secrets struct {
 
 type Domains struct {
 	Image string `mapstructure:"image"`
+	File  string `mapstructure:"file"`
 }
 
 func NewAppConfig(configFile string) (*AppConfig, error) {

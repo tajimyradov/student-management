@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strings"
+	"student-management/internal/config"
 	"student-management/internal/models"
 )
 
 type DepartmentRepository struct {
+	config    *config.AppConfig
 	studentDB *sqlx.DB
 }
 
-func NewDepartmentService(studentDB *sqlx.DB) *DepartmentRepository {
-	return &DepartmentRepository{studentDB: studentDB}
+func NewDepartmentService(studentDB *sqlx.DB, config *config.AppConfig) *DepartmentRepository {
+	return &DepartmentRepository{studentDB: studentDB, config: config}
 }
 
 func (d *DepartmentRepository) getPagination(query string, limit, page int) (models.Pagination, int, error) {
@@ -131,4 +133,97 @@ func (d *DepartmentRepository) GetDepartments(input models.DepartmentSearch) (mo
 		Departments: departments,
 		Pagination:  pagination,
 	}, nil
+}
+
+func (d *DepartmentRepository) AddFile(id int, fileURL string, name string) error {
+	query := `insert into department_files (department_id, file_url,name) values ($1, $2,$3)`
+	_, err := d.studentDB.Exec(query, id, fileURL, name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *DepartmentRepository) DeleteFile(id int) error {
+	query := `delete from department_files where id = $1`
+	_, err := d.studentDB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *DepartmentRepository) GetFileByID(id int) (string, error) {
+	var res string
+	query := `select file_url from department_files where id = $1`
+	err := d.studentDB.Get(&res, query, id)
+	if err != nil {
+		return "", err
+	}
+	return res, nil
+}
+
+func (d *DepartmentRepository) GetAllFiles(id int) ([]models.File, error) {
+	var files []models.File
+	query := fmt.Sprintf(`select id,'%s' || file_url as file_url,name from department_files where department_id = $1`, d.config.Domains.File)
+	err := d.studentDB.Select(&files, query, id)
+	if err != nil {
+		return []models.File{}, err
+	}
+
+	return files, nil
+}
+
+func (d *DepartmentRepository) GetProfessions(id int) ([]models.Profession, error) {
+	query := `select  p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id  where d.id = $1`
+	var professions []models.Profession
+	err := d.studentDB.Select(&professions, query, id)
+	if err != nil {
+		return []models.Profession{}, err
+	}
+	return professions, nil
+}
+
+func (d *DepartmentRepository) GetTeachers(id int) ([]models.Teacher, error) {
+	query := `select t.id,t.first_name,t.middle_name,t.last_name,t.code,t.department_id,coalesce(t.image,'') as image,d.name as department_name from teachers as t join departments as d on d.id=t.department_id where d.id = $1`
+	var teachers []models.Teacher
+	err := d.studentDB.Select(&teachers, query, id)
+	if err != nil {
+		return []models.Teacher{}, err
+	}
+	return teachers, nil
+}
+
+func (d *DepartmentRepository) GetStudentsCount(id int) (int, error) {
+	var count int
+	query := `
+			select count(*)
+			from students as s
+					 join groups g on s.group_id = g.id
+					 join professions as p on g.profession_id = p.id
+					 join departments as d on p.department_id = d.id
+			where d.id = $1
+			`
+	err := d.studentDB.Get(&count, query, id)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+
+}
+
+func (d *DepartmentRepository) GetGroupCount(id int) (int, error) {
+	var count int
+	query := `
+		select count(*)
+		from groups as g
+				 join professions as p on g.profession_id = p.id
+				 join departments as d on p.department_id = d.id
+		where d.id = $1
+		`
+	err := d.studentDB.Get(&count, query, id)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

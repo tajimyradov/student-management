@@ -24,9 +24,9 @@ type Repository struct {
 
 func NewRepository(studentDB *sqlx.DB, config *config.AppConfig) *Repository {
 	return &Repository{
-		FacultyRepository:    NewFacultyRepository(studentDB),
-		DepartmentRepository: NewDepartmentService(studentDB),
-		ProfessionRepository: NewProfessionRepository(studentDB),
+		FacultyRepository:    NewFacultyRepository(studentDB, config),
+		DepartmentRepository: NewDepartmentService(studentDB, config),
+		ProfessionRepository: NewProfessionRepository(studentDB, config),
 		GroupRepository:      NewGroupRepository(studentDB),
 		TeacherRepository:    NewTeacherRepository(studentDB),
 		StudentRepository:    NewStudentRepository(studentDB),

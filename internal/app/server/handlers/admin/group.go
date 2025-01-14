@@ -97,12 +97,14 @@ func (h *Admin) getGroups(c *gin.Context) {
 	code := c.Query("code")
 	year, _ := strconv.Atoi(c.Query("year"))
 	professionID, _ := strconv.Atoi(c.Query("profession_id"))
+	facultyID, _ := strconv.Atoi(c.Query("faculty_id"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 
 	res, err := h.services.GroupService.GetGroups(models.GroupSearch{
 		ID:           id,
 		Name:         name,
+		FacultyID:    facultyID,
 		Code:         code,
 		Year:         year,
 		ProfessionID: professionID,

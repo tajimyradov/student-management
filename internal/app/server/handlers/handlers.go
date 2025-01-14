@@ -36,6 +36,7 @@ func (h *Handler) Init() *gin.Engine {
 	// Init gin handler
 	router := gin.Default()
 	router.Static("/images", "./images")
+	router.Static("/files", "./files")
 
 	router.Use(
 		RequestCancelRecover(),
