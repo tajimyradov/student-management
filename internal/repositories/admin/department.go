@@ -40,8 +40,8 @@ func (d *DepartmentRepository) getPagination(query string, limit, page int) (mod
 }
 
 func (d *DepartmentRepository) AddDepartment(department models.Department) (models.Department, error) {
-	query := `insert into departments(name,code,faculty_id) values ($1,$2,$3) returning id`
-	err := d.studentDB.QueryRow(query, department.Name, department.Code, department.FacultyID).Scan(&department.ID)
+	query := `insert into departments(name,code,faculty_id,position) values ($1,$2,$3,$4) returning id`
+	err := d.studentDB.QueryRow(query, department.Name, department.Code, department.FacultyID, department.Position).Scan(&department.ID)
 	if err != nil {
 		return models.Department{}, err
 	}
@@ -49,8 +49,8 @@ func (d *DepartmentRepository) AddDepartment(department models.Department) (mode
 }
 
 func (d *DepartmentRepository) UpdateDepartment(department models.Department) error {
-	query := `update departments set name=$1 , code=$2 , faculty_id=$3 where id=$4`
-	_, err := d.studentDB.Exec(query, department.Name, department.Code, department.FacultyID, department.ID)
+	query := `update departments set name=$1 , code=$2 , faculty_id=$3, position=$4 where id=$5`
+	_, err := d.studentDB.Exec(query, department.Name, department.Code, department.FacultyID, department.Position, department.ID)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (d *DepartmentRepository) UpdateDepartment(department models.Department) er
 
 func (d *DepartmentRepository) GetDepartmentById(id int) (models.Department, error) {
 	var department models.Department
-	query := `select d.id,d.name,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id where d.id=$1`
+	query := `select d.id,d.name,d.code, d.position,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id where d.id=$1`
 	err := d.studentDB.Get(&department, query, id)
 	if err != nil {
 		return models.Department{}, err
@@ -110,9 +110,9 @@ func (d *DepartmentRepository) GetDepartments(input models.DepartmentSearch) (mo
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select (select count(*) from teachers where department_id=d.id) as teachers_count,d.id,d.name,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id  where " + queryArgs
+		query = "select (select count(*) from teachers where department_id=d.id) as teachers_count,d.id,d.name, d.position,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id  where " + queryArgs
 	} else {
-		query = "select (select count(*) from teachers where department_id=d.id) as teachers_count,d.id,d.name,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id "
+		query = "select (select count(*) from teachers where department_id=d.id) as teachers_count,d.id,d.name, d.position,d.code,coalesce(d.faculty_id,0) as faculty_id,f.name as faculty_name from departments as d join faculties as f on f.id=d.faculty_id"
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
@@ -121,7 +121,7 @@ func (d *DepartmentRepository) GetDepartments(input models.DepartmentSearch) (mo
 		return models.DepartmentAndPagination{}, err
 	}
 
-	query += fmt.Sprintf(` limit %d offset %d`, input.Limit, offset)
+	query += fmt.Sprintf(` order by d.position limit %d offset %d`, input.Limit, offset)
 
 	var departments []models.Department
 	err = d.studentDB.Select(&departments, query)
@@ -175,7 +175,7 @@ func (d *DepartmentRepository) GetAllFiles(id int) ([]models.File, error) {
 }
 
 func (d *DepartmentRepository) GetProfessions(id int) ([]models.Profession, error) {
-	query := `select  p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id  where d.id = $1`
+	query := `select  p.id,p.name,p.code,p.department_id, p.position, d.name as department_name from professions as p join departments as d on d.id=p.department_id  where d.id = $1`
 	var professions []models.Profession
 	err := d.studentDB.Select(&professions, query, id)
 	if err != nil {

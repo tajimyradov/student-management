@@ -8,6 +8,7 @@ type Department struct {
 	FacultyName   string `json:"faculty_name" db:"faculty_name"`
 	Files         []File `json:"files" db:"files"`
 	TeachersCount int    `json:"teachers_count" db:"teachers_count"`
+	Position      int    `json:"position" db:"position"`
 }
 
 type DepartmentInfo struct {

@@ -43,9 +43,9 @@ func (p *ProfessionRepository) getPagination(query string, limit, page int) (mod
 }
 
 func (p *ProfessionRepository) AddProfession(input models.Profession) (models.Profession, error) {
-	query := `insert into professions(name,code,department_id) values ($1,$2,$3) returning id`
+	query := `insert into professions(name,code,department_id, position) values ($1,$2,$3,$4) returning id`
 	var profession models.Profession
-	err := p.studentDB.QueryRow(query, input.Name, input.Code, input.DepartmentID).Scan(&profession.ID)
+	err := p.studentDB.QueryRow(query, input.Name, input.Code, input.DepartmentID, input.Position).Scan(&profession.ID)
 	if err != nil {
 		return models.Profession{}, err
 	}
@@ -53,8 +53,8 @@ func (p *ProfessionRepository) AddProfession(input models.Profession) (models.Pr
 }
 
 func (p *ProfessionRepository) UpdateProfession(input models.Profession) error {
-	query := `update professions set name=$1, code=$2, department_id=$3 where id=$4`
-	_, err := p.studentDB.Exec(query, input.Name, input.Code, input.DepartmentID, input.ID)
+	query := `update professions set name=$1, code=$2, department_id=$3, position=$4 where id=$5`
+	_, err := p.studentDB.Exec(query, input.Name, input.Code, input.DepartmentID, input.Position, input.ID)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (p *ProfessionRepository) DeleteProfession(id int) error {
 }
 
 func (p *ProfessionRepository) GetProfessionByID(id int) (models.Profession, error) {
-	query := `select p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id where p.id=$1`
+	query := `select p.id,p.name,p.code,p.department_id, p.position, d.name as department_name from professions as p join departments as d on d.id=p.department_id where p.id=$1`
 	var profession models.Profession
 	err := p.studentDB.Get(&profession, query, id)
 	if err != nil {
@@ -120,9 +120,9 @@ func (p *ProfessionRepository) GetProfessions(input models.ProfessionSearch) (mo
 	var query string
 
 	if argId > 1 || input.Name != "" {
-		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id where " + queryArgs
+		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, p.position, d.name as department_name from professions as p join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id where " + queryArgs
 	} else {
-		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, d.name as department_name from professions as p join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id"
+		query = "select (select count(*) from groups where profession_id=p.id) as group_count, p.id,p.name,p.code,p.department_id, p.position, d.name as department_name from professions as p join departments as d on d.id=p.department_id join faculties as f on f.id=d.faculty_id"
 	}
 
 	paginationQuery := fmt.Sprintf(`select count(*) from (%s) as s`, query)
@@ -131,7 +131,7 @@ func (p *ProfessionRepository) GetProfessions(input models.ProfessionSearch) (mo
 		return models.ProfessionAndPagination{}, err
 	}
 
-	query += fmt.Sprintf(` limit %d offset %d`, input.Limit, offset)
+	query += fmt.Sprintf(` order by p.position limit %d offset %d`, input.Limit, offset)
 
 	var professions []models.Profession
 	err = p.studentDB.Select(&professions, query, args...)

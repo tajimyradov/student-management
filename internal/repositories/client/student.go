@@ -17,7 +17,7 @@ func NewStudentRepository(db *sqlx.DB) *StudentRepository {
 }
 
 func (s *StudentRepository) GetStudentsForTeacher(groupID int) ([]models.Student, error) {
-	query := `select s.id,s.first_name, s.last_name from students as s where s.group_id=$1`
+	query := `select s.id,s.first_name, s.last_name from students as s where s.group_id=$1 order by s.last_name;`
 	var students []models.Student
 	err := s.studentDB.Select(&students, query, groupID)
 	return students, err
@@ -40,7 +40,7 @@ func (s *StudentRepository) GetFaculties() ([]models.Faculty, error) {
 }
 
 func (s *StudentRepository) GetDepartments(facultyID int) ([]models.Department, error) {
-	query := `select id,name from departments where faculty_id=$1`
+	query := `select id,name from departments where faculty_id=$1 order by position  `
 	var departments []models.Department
 	err := s.studentDB.Select(&departments, query, facultyID)
 	return departments, err

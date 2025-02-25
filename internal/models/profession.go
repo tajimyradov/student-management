@@ -8,6 +8,7 @@ type Profession struct {
 	Files          []File `json:"files" db:"files"`
 	DepartmentName string `json:"department_name" db:"department_name"`
 	GroupCount     int    `json:"group_count" db:"group_count"`
+	Position       int    `json:"position" db:"position"`
 }
 
 type ProfessionInfo struct {
